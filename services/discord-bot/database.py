@@ -25,6 +25,7 @@ from repositories import (
     MonitorRepository,
     NewsRepository,
     PracticeRepository,
+    ReportRepository,
 )
 from utils.logger import db_log as log
 
@@ -181,6 +182,16 @@ CREATE TABLE IF NOT EXISTS kb_chunks (
     created_at  TIMESTAMPTZ NOT NULL DEFAULT NOW()
 );
 CREATE INDEX IF NOT EXISTS idx_kbchunks_doc ON kb_chunks (document_id);
+
+-- Phase 7 -----------------------------------------------------------------
+CREATE TABLE IF NOT EXISTS reports (
+    id         SERIAL PRIMARY KEY,
+    title      TEXT NOT NULL,
+    summary    TEXT,
+    content    TEXT,
+    created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+);
+CREATE INDEX IF NOT EXISTS idx_reports_created ON reports (created_at DESC);
 """
 
 
@@ -199,6 +210,7 @@ class Database:
         self.practice: PracticeRepository | None = None
         self.machines: MachineRepository | None = None
         self.kb: KBRepository | None = None
+        self.reports: ReportRepository | None = None
 
     @property
     def pool(self) -> asyncpg.Pool:
@@ -226,6 +238,7 @@ class Database:
         self.practice = PracticeRepository(self._pool)
         self.machines = MachineRepository(self._pool)
         self.kb = KBRepository(self._pool)
+        self.reports = ReportRepository(self._pool)
         log.info("PostgreSQL pool ready, schema ensured, repositories wired.")
 
     async def close(self) -> None:

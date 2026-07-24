@@ -157,6 +157,16 @@ class Dashboard:
         )
         return [dict(r) for r in rows]
 
+    async def latest_reports(self, limit: int = 5) -> list[dict[str, Any]]:
+        try:
+            rows = await self.pool.fetch(
+                "SELECT title, summary, created_at FROM reports ORDER BY created_at DESC LIMIT $1;",
+                limit,
+            )
+        except Exception:
+            return []
+        return [dict(r) for r in rows]
+
     async def top_skills(self, limit: int = 8) -> list[dict[str, Any]]:
         rows = await self.pool.fetch(
             """

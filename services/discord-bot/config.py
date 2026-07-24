@@ -172,6 +172,11 @@ class Config:
     kb_min_similarity: float = field(default_factory=lambda: _get_float("KB_MIN_SIMILARITY", 0.35))
     knowledge_dir: str = field(default_factory=lambda: _get("KNOWLEDGE_DIR", "/data/knowledge"))
 
+    # --- Phase 7: multi-agent intelligence reports -----------------------
+    report_channel: str = field(default_factory=lambda: _get("REPORT_CHANNEL", "ai-summaries"))
+    report_day: int = field(default_factory=lambda: _get_int("REPORT_DAY", 0))
+    report_time: str = field(default_factory=lambda: _get("REPORT_TIME", "07:45"))
+
     @property
     def htb_enabled(self) -> bool:
         return bool(self.htb_app_token)

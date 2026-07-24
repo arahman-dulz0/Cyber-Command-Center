@@ -38,6 +38,7 @@ INITIAL_COGS = (
     "cogs.monitor",
     "cogs.learning",
     "cogs.knowledge",
+    "cogs.reports",
 )
 
 
@@ -95,6 +96,7 @@ class CyberCommandBot(commands.Bot):
         # --- Scheduled tasks ------------------------------------------
         self.daily_brief_task.start()
         self.weekly_recommend_task.start()
+        self.weekly_report_task.start()
 
     async def on_ready(self) -> None:
         log.info("Logged in as %s (id: %s)", self.user, self.user.id if self.user else "?")
@@ -110,6 +112,7 @@ class CyberCommandBot(commands.Bot):
             self.scheduler.stop()
         self.daily_brief_task.cancel()
         self.weekly_recommend_task.cancel()
+        self.weekly_report_task.cancel()
         if self.redis is not None:
             await self.redis.aclose()
         await db.close()
@@ -234,6 +237,38 @@ class CyberCommandBot(commands.Bot):
             hour, minute = (int(x) for x in config.recommend_time.split(":"))
         except ValueError:
             hour, minute = 8, 0
+        now = datetime.now(tz)
+        target = now.replace(hour=hour, minute=minute, second=0, microsecond=0)
+        if target <= now:
+            target += timedelta(days=1)
+        await asyncio.sleep((target - now).total_seconds())
+
+    # --- Weekly multi-agent intelligence report (Phase 7) ---------------
+    @tasks.loop(hours=24)  # checked daily; posts only on the configured weekday
+    async def weekly_report_task(self) -> None:
+        now = embeds.now_local()
+        if now.weekday() != config.report_day:
+            return
+        channel = self.find_channel(config.report_channel)
+        if channel is None:
+            log.warning("Report channel #%s not found", config.report_channel)
+            return
+        try:
+            from cogs.reports import build_report_embed, run_and_store
+            report = await run_and_store(f"Weekly Intelligence Report — {now.strftime('%Y-%m-%d')}")
+            await channel.send(embed=build_report_embed(report))
+            log.info("Posted weekly agent report to #%s", config.report_channel)
+        except Exception:  # noqa: BLE001
+            log.error("Weekly report failed\n%s", traceback.format_exc())
+
+    @weekly_report_task.before_loop
+    async def _before_report(self) -> None:
+        await self.wait_until_ready()
+        tz = ZoneInfo(config.timezone)
+        try:
+            hour, minute = (int(x) for x in config.report_time.split(":"))
+        except ValueError:
+            hour, minute = 7, 45
         now = datetime.now(tz)
         target = now.replace(hour=hour, minute=minute, second=0, microsecond=0)
         if target <= now:

@@ -56,6 +56,12 @@
       </div>
     </section>
 
+    <!-- Agent reports -->
+    <section class="card p-4 mt-4">
+      <h2 class="text-sm font-semibold text-gray-300 mb-3">🧠 Latest intelligence reports <span class="text-gray-600 text-xs">· agent crew</span></h2>
+      <div id="reports" class="space-y-2 text-sm"></div>
+    </section>
+
     <footer class="text-center text-[10px] text-gray-600 mt-6">
       Cyber Command Center • self-hosted • auto-refresh 30s
     </footer>
@@ -141,6 +147,14 @@ async function refresh(){
         <span class="text-gray-500 text-xs ml-2">${badges}</span></div>
       <div class="font-bold" style="color:${c}">${Number(a.priority_score)||0}</div></div>`;
   }).join('') : '<div class="text-gray-600 text-xs">No enriched CVEs yet.</div>';
+
+  // Reports
+  const rp = await j('/api/latest-reports');
+  document.getElementById('reports').innerHTML = rp.length ? rp.map(r=>
+    `<div class="border-b border-[#1a222e] pb-2">
+      <div class="text-white font-semibold">${esc(r.title)}</div>
+      <div class="text-gray-400 text-xs mt-1">${esc((r.summary||'').slice(0,300))}${(r.summary||'').length>300?'…':''}</div>
+    </div>`).join('') : '<div class="text-gray-600 text-xs">No reports yet — run <span class="text-gray-400">/report</span> in Discord.</div>';
 
   // News
   const nw = await j('/api/latest-news');

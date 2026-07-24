@@ -78,3 +78,8 @@ async def api_latest_news() -> JSONResponse:
 @app.get("/api/top-skills")
 async def api_top_skills() -> JSONResponse:
     return JSONResponse(_clean(await dashboard.top_skills()))
+
+
+@app.get("/api/latest-reports")
+async def api_latest_reports() -> JSONResponse:
+    return JSONResponse(_clean(await dashboard.latest_reports()))

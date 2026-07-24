@@ -227,6 +227,7 @@ class General(commands.Cog):
                 "`/status` — System + service dashboard.\n"
                 "`/stats` — Platform statistics.\n"
                 "`/brief` — Daily security briefing.\n"
+                "`/report` — AI agent-crew intelligence report.\n"
                 "`/help` — This message."
             ),
             inline=False,

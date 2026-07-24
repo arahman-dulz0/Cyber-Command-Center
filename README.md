@@ -103,4 +103,5 @@ engine. See **[docs/phase3.md](docs/phase3.md)**.
 - **Phase 4** — personalised learning intelligence (HTB import + `/practiced` journal + AI `/recommend`) ✅
 - **Phase 5** — RAG knowledge base: `/ask` grounded in your own notes/writeups/PDFs with citations ✅
 - **Phase 6** — self-hosted SOC web dashboard (FastAPI + Chart.js, LAN-only, read-only over Postgres) ✅
-- **Phase 7** — multi-agent · **Phase 8** — automation/actioning
+- **Phase 7** — multi-agent intelligence crew (Planner→Researcher→Analyst→Coach→Writer → `/report`) ✅
+- **Phase 8** — automation/actioning

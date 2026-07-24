@@ -9,6 +9,7 @@ from repositories.kb_repository import KBRepository
 from repositories.learning_repository import MachineRepository, PracticeRepository
 from repositories.monitor_repository import MonitorRepository
 from repositories.news_repository import NewsRepository
+from repositories.report_repository import ReportRepository
 
 __all__ = [
     "BaseRepository",
@@ -21,5 +22,6 @@ __all__ = [
     "PracticeRepository",
     "MachineRepository",
     "KBRepository",
+    "ReportRepository",
     "content_hash",
 ]
