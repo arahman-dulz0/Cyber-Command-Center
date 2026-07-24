@@ -2,6 +2,8 @@
 
 from __future__ import annotations
 
+import traceback
+
 import discord
 from discord import app_commands
 from discord.ext import commands
@@ -40,16 +42,39 @@ class Reports(commands.Cog):
 
     @app_commands.command(name="report", description="Run the AI agent crew to generate an intelligence report.")
     async def report(self, interaction: discord.Interaction) -> None:
-        # The crew runs 5 sequential AI agents — can take ~1 minute on this host.
-        await interaction.response.defer(thinking=True)
+        # The crew runs 5 sequential AI agents and can take several minutes on a
+        # CPU-only host. A slash-command interaction token is only valid for 15
+        # minutes, so we ACK immediately and then deliver the finished report via
+        # a normal channel message (no token expiry) rather than a followup.
+        await interaction.response.send_message(
+            embed=embeds.base_embed(
+                title="🧠 Agent crew engaged",
+                description=(
+                    "Compiling your intelligence report — five agents run in "
+                    "sequence (Planner → Researcher → Analyst → Coach → Writer). "
+                    "This can take a couple of minutes; I'll post it here when ready."
+                ),
+                color=embeds.INFO,
+            )
+        )
         await db.log_command(
             user_id=interaction.user.id, username=str(interaction.user),
             command="/report", guild_id=interaction.guild_id,
         )
         log.info("Agent crew report requested by %s", interaction.user)
+
+        channel = interaction.channel
         now = embeds.now_local().strftime("%Y-%m-%d %H:%M")
-        report = await run_and_store(f"Intelligence Report — {now}")
-        await interaction.followup.send(embed=build_report_embed(report))
+        try:
+            report = await run_and_store(f"Intelligence Report — {now}")
+            if channel is not None:
+                await channel.send(embed=build_report_embed(report))
+        except Exception:  # noqa: BLE001
+            log.error("Agent crew report failed\n%s", traceback.format_exc())
+            if channel is not None:
+                await channel.send(
+                    embed=embeds.error_embed("Report generation failed — see #bot-logs.")
+                )
 
 
 async def setup(bot: commands.Bot) -> None:
