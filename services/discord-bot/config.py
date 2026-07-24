@@ -170,7 +170,7 @@ class Config:
     kb_chunk_overlap: int = field(default_factory=lambda: _get_int("KB_CHUNK_OVERLAP", 120))
     kb_top_k: int = field(default_factory=lambda: _get_int("KB_TOP_K", 5))
     kb_min_similarity: float = field(default_factory=lambda: _get_float("KB_MIN_SIMILARITY", 0.35))
-    knowledge_dir: str = field(default_factory=lambda: _get("KNOWLEDGE_DIR", "/app/knowledge"))
+    knowledge_dir: str = field(default_factory=lambda: _get("KNOWLEDGE_DIR", "/data/knowledge"))
 
     @property
     def htb_enabled(self) -> bool:
