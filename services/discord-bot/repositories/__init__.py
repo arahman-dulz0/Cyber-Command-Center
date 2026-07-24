@@ -5,6 +5,7 @@ from repositories.base import BaseRepository
 from repositories.command_repository import CommandRepository
 from repositories.cve_repository import CVERepository
 from repositories.enrichment_repository import EnrichmentRepository
+from repositories.learning_repository import MachineRepository, PracticeRepository
 from repositories.monitor_repository import MonitorRepository
 from repositories.news_repository import NewsRepository
 
@@ -16,5 +17,7 @@ __all__ = [
     "CommandRepository",
     "AIRepository",
     "EnrichmentRepository",
+    "PracticeRepository",
+    "MachineRepository",
     "content_hash",
 ]

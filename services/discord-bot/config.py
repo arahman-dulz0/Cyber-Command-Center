@@ -155,6 +155,18 @@ class Config:
     kev_refresh_hours: int = field(default_factory=lambda: _get_int("KEV_REFRESH_HOURS", 6))
     exploitdb_refresh_hours: int = field(default_factory=lambda: _get_int("EXPLOITDB_REFRESH_HOURS", 24))
 
+    # --- Phase 4: learning intelligence ----------------------------------
+    htb_app_token: str = field(default_factory=lambda: _get("HTB_APP_TOKEN", ""))
+    htb_api_base: str = field(default_factory=lambda: _get("HTB_API_BASE", "https://labs.hackthebox.com/api/v4"))
+    htb_refresh_hours: int = field(default_factory=lambda: _get_int("HTB_REFRESH_HOURS", 24))
+    # Weekly recommendation: day-of-week (0=Mon..6=Sun) + HH:MM local time.
+    recommend_day: int = field(default_factory=lambda: _get_int("RECOMMEND_DAY", 0))
+    recommend_time: str = field(default_factory=lambda: _get("RECOMMEND_TIME", "08:00"))
+
+    @property
+    def htb_enabled(self) -> bool:
+        return bool(self.htb_app_token)
+
     # --- Channel names (configurable; the server already has these) -------
     channel_cve_alerts: str = field(default_factory=lambda: _get("CVE_ALERTS_CHANNEL", "cve-alerts"))
     channel_cyber_news: str = field(default_factory=lambda: _get("CYBER_NEWS_CHANNEL", "cyber-news"))

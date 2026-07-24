@@ -20,8 +20,10 @@ from repositories import (
     CommandRepository,
     CVERepository,
     EnrichmentRepository,
+    MachineRepository,
     MonitorRepository,
     NewsRepository,
+    PracticeRepository,
 )
 from utils.logger import db_log as log
 
@@ -123,6 +125,39 @@ CREATE TABLE IF NOT EXISTS cve_enrichment (
 );
 CREATE INDEX IF NOT EXISTS idx_enrich_priority ON cve_enrichment (priority_score DESC);
 CREATE INDEX IF NOT EXISTS idx_enrich_kev      ON cve_enrichment (kev);
+
+-- Phase 4 -----------------------------------------------------------------
+CREATE TABLE IF NOT EXISTS practice_log (
+    id           SERIAL PRIMARY KEY,
+    user_id      BIGINT,
+    username     TEXT,
+    machine      TEXT NOT NULL,
+    platform     TEXT NOT NULL DEFAULT 'HTB',
+    skills       TEXT[] NOT NULL DEFAULT '{}',
+    difficulty   TEXT,
+    notes        TEXT,
+    source       TEXT NOT NULL DEFAULT 'manual',
+    practiced_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+);
+CREATE INDEX IF NOT EXISTS idx_practice_when   ON practice_log (practiced_at DESC);
+CREATE INDEX IF NOT EXISTS idx_practice_skills ON practice_log USING GIN (skills);
+
+CREATE TABLE IF NOT EXISTS htb_machines (
+    machine_id   INTEGER PRIMARY KEY,
+    name         TEXT NOT NULL,
+    os           TEXT,
+    difficulty   TEXT,
+    points       INTEGER,
+    retired      BOOLEAN NOT NULL DEFAULT FALSE,
+    active       BOOLEAN NOT NULL DEFAULT FALSE,
+    release_date TIMESTAMPTZ,
+    skill_areas  TEXT[] NOT NULL DEFAULT '{}',
+    user_owned   BOOLEAN NOT NULL DEFAULT FALSE,
+    root_owned   BOOLEAN NOT NULL DEFAULT FALSE,
+    updated_at   TIMESTAMPTZ NOT NULL DEFAULT NOW()
+);
+CREATE INDEX IF NOT EXISTS idx_htb_os    ON htb_machines (os);
+CREATE INDEX IF NOT EXISTS idx_htb_owned ON htb_machines (user_owned, root_owned);
 """
 
 
@@ -138,6 +173,8 @@ class Database:
         self.commands: CommandRepository | None = None
         self.ai: AIRepository | None = None
         self.enrichment: EnrichmentRepository | None = None
+        self.practice: PracticeRepository | None = None
+        self.machines: MachineRepository | None = None
 
     @property
     def pool(self) -> asyncpg.Pool:
@@ -162,6 +199,8 @@ class Database:
         self.commands = CommandRepository(self._pool)
         self.ai = AIRepository(self._pool)
         self.enrichment = EnrichmentRepository(self._pool)
+        self.practice = PracticeRepository(self._pool)
+        self.machines = MachineRepository(self._pool)
         log.info("PostgreSQL pool ready, schema ensured, repositories wired.")
 
     async def close(self) -> None:

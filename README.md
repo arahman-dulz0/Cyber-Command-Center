@@ -100,6 +100,6 @@ engine. See **[docs/phase3.md](docs/phase3.md)**.
 - **Phase 1** — Discord bot foundation ✅
 - **Phase 2** — autonomous CVE + news threat intelligence ✅
 - **Phase 3** — threat-intelligence fusion engine (EPSS/KEV/ExploitDB/PoC/priority) ✅
-- **Phase 4** — personalised learning intelligence (HTB/CTF recommendations)
+- **Phase 4** — personalised learning intelligence (HTB import + `/practiced` journal + AI `/recommend`) ✅
 - **Phase 5** — RAG knowledge base (`/ask` over your own notes & writeups)
 - **Phase 6** — web dashboard (SOC-style) · **Phase 7** — multi-agent · **Phase 8** — automation/actioning

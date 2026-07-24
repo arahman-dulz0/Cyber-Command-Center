@@ -204,6 +204,15 @@ class General(commands.Cog):
             inline=False,
         )
         embed.add_field(
+            name="🎓 Learning",
+            value=(
+                "`/practiced` — Log a machine/box you practiced.\n"
+                "`/progress` — Your practice history & skill coverage.\n"
+                "`/recommend` — AI: what to practice next."
+            ),
+            inline=False,
+        )
+        embed.add_field(
             name="📊 General",
             value=(
                 "`/status` — System + service dashboard.\n"

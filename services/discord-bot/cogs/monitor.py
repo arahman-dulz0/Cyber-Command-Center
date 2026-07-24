@@ -21,6 +21,7 @@ class Monitor(commands.Cog):
         target=[
             app_commands.Choice(name="CVE monitor", value="cve"),
             app_commands.Choice(name="News monitor", value="news"),
+            app_commands.Choice(name="HTB catalog import", value="htb"),
         ]
     )
     @app_commands.checks.has_permissions(administrator=True)

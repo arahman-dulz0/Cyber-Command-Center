@@ -36,6 +36,7 @@ INITIAL_COGS = (
     "cogs.admin",
     "cogs.stats",
     "cogs.monitor",
+    "cogs.learning",
 )
 
 
@@ -92,6 +93,7 @@ class CyberCommandBot(commands.Bot):
 
         # --- Scheduled tasks ------------------------------------------
         self.daily_brief_task.start()
+        self.weekly_recommend_task.start()
 
     async def on_ready(self) -> None:
         log.info("Logged in as %s (id: %s)", self.user, self.user.id if self.user else "?")
@@ -106,6 +108,7 @@ class CyberCommandBot(commands.Bot):
         if self.scheduler is not None:
             self.scheduler.stop()
         self.daily_brief_task.cancel()
+        self.weekly_recommend_task.cancel()
         if self.redis is not None:
             await self.redis.aclose()
         await db.close()
@@ -202,6 +205,39 @@ class CyberCommandBot(commands.Bot):
         log.info("Daily brief scheduled in %.0f minutes (%02d:%02d %s), then every 24h",
                  wait / 60, hour, minute, config.timezone)
         await asyncio.sleep(wait)
+
+    # --- Weekly learning recommendation (Phase 4) -----------------------
+    @tasks.loop(hours=24)  # checked daily; posts only on the configured weekday
+    async def weekly_recommend_task(self) -> None:
+        now = embeds.now_local()
+        if now.weekday() != config.recommend_day:
+            return
+        channel = self.find_channel(config.channel_htb_ctf)
+        if channel is None:
+            log.warning("Recommendation channel #%s not found", config.channel_htb_ctf)
+            return
+        try:
+            from learning.recommender import recommender
+            embed = await recommender.build_recommendation_embed()
+            embed.title = "📅 Weekly Practice Recommendation"
+            await channel.send(embed=embed)
+            log.info("Posted weekly recommendation to #%s", config.channel_htb_ctf)
+        except Exception:  # noqa: BLE001
+            log.error("Weekly recommendation failed\n%s", traceback.format_exc())
+
+    @weekly_recommend_task.before_loop
+    async def _before_recommend(self) -> None:
+        await self.wait_until_ready()
+        tz = ZoneInfo(config.timezone)
+        try:
+            hour, minute = (int(x) for x in config.recommend_time.split(":"))
+        except ValueError:
+            hour, minute = 8, 0
+        now = datetime.now(tz)
+        target = now.replace(hour=hour, minute=minute, second=0, microsecond=0)
+        if target <= now:
+            target += timedelta(days=1)
+        await asyncio.sleep((target - now).total_seconds())
 
 
 def main() -> None:
