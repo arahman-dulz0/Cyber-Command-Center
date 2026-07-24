@@ -1,0 +1,10 @@
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.env
+logs/
+*.log
+.git/
+.gitignore
+README.md

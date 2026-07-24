@@ -1,0 +1,45 @@
+# Docker Compose service for the Cyber Command Center Discord bot.
+#
+# The bot connects to the already-running infrastructure (PostgreSQL, Redis,
+# Ollama) over the LAN using the hosts/ports defined in ../.env, so it does not
+# need to share a Docker network with infrastructure.yml.
+#
+# Usage (from the project root on the server):
+#   docker compose -f docker/bot.yml up -d --build
+#   docker compose -f docker/bot.yml logs -f
+
+services:
+  discord-bot:
+    container_name: cyber-discord-bot
+    build:
+      context: ../services/discord-bot
+      dockerfile: Dockerfile
+    env_file:
+      - ../.env
+    environment:
+      TZ: ${TIMEZONE:-Asia/Colombo}
+    # Run as the host user (uid:gid 1000:1000 = abdul) so the process can write
+    # to the bind-mounted logs directory, which is owned by the host user.
+    # Overrides the image's non-root `cyber` user (uid 999) only for filesystem
+    # ownership purposes — the app still runs unprivileged.
+    user: "1000:1000"
+    volumes:
+      # Persist rotated log files on the host.
+      - ../services/discord-bot/logs:/app/logs
+    restart: unless-stopped
+    # Join the existing infrastructure network so the bot can reach the
+    # postgres/redis containers by service name (their ports are not published
+    # to the host). Ollama runs on the host and is reached via the LAN IP.
+    networks:
+      - cyber-net
+    logging:
+      driver: json-file
+      options:
+        max-size: "10m"
+        max-file: "3"
+
+networks:
+  # The network created by the existing infrastructure compose stack.
+  cyber-net:
+    external: true
+    name: docker_cyber-net
