@@ -194,7 +194,16 @@ class General(commands.Cog):
             description="Your personal, autonomous cybersecurity operations center.",
             color=embeds.INFO,
         )
-        embed.add_field(name="🤖 AI", value="`/ask [question]` — Ask the local AI anything.", inline=False)
+        embed.add_field(
+            name="🤖 AI & Knowledge",
+            value=(
+                "`/ask [question]` — Ask the AI (grounded in your notes when relevant).\n"
+                "`/kb-add [file]` — Index a PDF/Markdown/text doc.\n"
+                "`/kb-search [query]` — Search your knowledge base.\n"
+                "`/kb-list` — List indexed documents."
+            ),
+            inline=False,
+        )
         embed.add_field(
             name="🔎 Threat Intel",
             value=(

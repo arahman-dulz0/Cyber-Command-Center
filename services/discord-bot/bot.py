@@ -37,6 +37,7 @@ INITIAL_COGS = (
     "cogs.stats",
     "cogs.monitor",
     "cogs.learning",
+    "cogs.knowledge",
 )
 
 

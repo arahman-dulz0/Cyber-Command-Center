@@ -26,6 +26,8 @@ services:
     volumes:
       # Persist rotated log files on the host.
       - ../services/discord-bot/logs:/app/logs
+      # Phase 5: drop PDFs/markdown/text here for bulk knowledge-base ingest.
+      - ../knowledge:/app/knowledge
     restart: unless-stopped
     # Join the existing infrastructure network so the bot can reach the
     # postgres/redis containers by service name (their ports are not published

@@ -20,6 +20,7 @@ from repositories import (
     CommandRepository,
     CVERepository,
     EnrichmentRepository,
+    KBRepository,
     MachineRepository,
     MonitorRepository,
     NewsRepository,
@@ -158,6 +159,28 @@ CREATE TABLE IF NOT EXISTS htb_machines (
 );
 CREATE INDEX IF NOT EXISTS idx_htb_os    ON htb_machines (os);
 CREATE INDEX IF NOT EXISTS idx_htb_owned ON htb_machines (user_owned, root_owned);
+
+-- Phase 5 -----------------------------------------------------------------
+CREATE TABLE IF NOT EXISTS kb_documents (
+    id           SERIAL PRIMARY KEY,
+    title        TEXT NOT NULL,
+    source_type  TEXT NOT NULL DEFAULT 'note',
+    source_ref   TEXT,
+    content_hash TEXT UNIQUE NOT NULL,
+    added_by     TEXT,
+    chunk_count  INTEGER NOT NULL DEFAULT 0,
+    created_at   TIMESTAMPTZ NOT NULL DEFAULT NOW()
+);
+
+CREATE TABLE IF NOT EXISTS kb_chunks (
+    id          SERIAL PRIMARY KEY,
+    document_id INTEGER NOT NULL REFERENCES kb_documents(id) ON DELETE CASCADE,
+    chunk_index INTEGER NOT NULL,
+    content     TEXT NOT NULL,
+    embedding   FLOAT8[] NOT NULL,
+    created_at  TIMESTAMPTZ NOT NULL DEFAULT NOW()
+);
+CREATE INDEX IF NOT EXISTS idx_kbchunks_doc ON kb_chunks (document_id);
 """
 
 
@@ -175,6 +198,7 @@ class Database:
         self.enrichment: EnrichmentRepository | None = None
         self.practice: PracticeRepository | None = None
         self.machines: MachineRepository | None = None
+        self.kb: KBRepository | None = None
 
     @property
     def pool(self) -> asyncpg.Pool:
@@ -201,6 +225,7 @@ class Database:
         self.enrichment = EnrichmentRepository(self._pool)
         self.practice = PracticeRepository(self._pool)
         self.machines = MachineRepository(self._pool)
+        self.kb = KBRepository(self._pool)
         log.info("PostgreSQL pool ready, schema ensured, repositories wired.")
 
     async def close(self) -> None:

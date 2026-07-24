@@ -18,6 +18,7 @@ from config import config
 from tasks.base import BaseMonitor, MonitorResult
 from tasks.cve_monitor import CVEMonitor
 from tasks.htb_monitor import HTBMonitor
+from tasks.kb_monitor import KBMonitor
 from tasks.news_monitor import NewsMonitor
 from utils.logger import scheduler_log as log
 
@@ -95,4 +96,7 @@ def build_default_scheduler(bot: commands.Bot) -> Scheduler:
     # HTB catalog import only runs when a token is configured.
     if config.htb_enabled:
         scheduler.register(HTBMonitor(bot))
+    # Knowledge-base folder ingest.
+    if config.kb_enabled:
+        scheduler.register(KBMonitor(bot))
     return scheduler

@@ -163,6 +163,15 @@ class Config:
     recommend_day: int = field(default_factory=lambda: _get_int("RECOMMEND_DAY", 0))
     recommend_time: str = field(default_factory=lambda: _get("RECOMMEND_TIME", "08:00"))
 
+    # --- Phase 5: knowledge base (RAG) -----------------------------------
+    kb_enabled: bool = field(default_factory=lambda: _get_bool("KB_ENABLED", True))
+    embed_model: str = field(default_factory=lambda: _get("EMBED_MODEL", "nomic-embed-text"))
+    kb_chunk_size: int = field(default_factory=lambda: _get_int("KB_CHUNK_SIZE", 800))
+    kb_chunk_overlap: int = field(default_factory=lambda: _get_int("KB_CHUNK_OVERLAP", 120))
+    kb_top_k: int = field(default_factory=lambda: _get_int("KB_TOP_K", 5))
+    kb_min_similarity: float = field(default_factory=lambda: _get_float("KB_MIN_SIMILARITY", 0.35))
+    knowledge_dir: str = field(default_factory=lambda: _get("KNOWLEDGE_DIR", "/app/knowledge"))
+
     @property
     def htb_enabled(self) -> bool:
         return bool(self.htb_app_token)
