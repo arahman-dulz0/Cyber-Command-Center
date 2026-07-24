@@ -75,49 +75,52 @@ class HTBClient:
             "root_owned": bool(_first(m, "authUserInRootOwns", "isRootOwn", default=False)),
         }
 
-    async def fetch_catalog(self, *, max_retired_pages: int = 8) -> list[dict]:
+    async def _fetch_paginated(
+        self, session: aiohttp.ClientSession, path: str, *, retired: bool, max_pages: int
+    ) -> list[dict]:
+        """Walk a Laravel-paginated machine endpoint ({data, meta}) into normalized dicts."""
+        out: list[dict] = []
+        page = 1
+        while page <= max_pages:
+            data = await self._get(session, path, params={"per_page": "100", "page": str(page)})
+            if not data:
+                break
+            rows = data.get("data") or data.get("info") or []
+            if not rows:
+                break
+            for m in rows:
+                norm = self._normalize(m, retired=retired)
+                if norm:
+                    out.append(norm)
+            meta = data.get("meta") or {}
+            last_page = meta.get("last_page")
+            if last_page is not None and page >= last_page:
+                break
+            page += 1
+        return out
+
+    async def fetch_catalog(self, *, max_active_pages: int = 4, max_retired_pages: int = 8) -> list[dict]:
         """
         Return normalized machine dicts (active + retired) with own-status.
         Empty list on any failure — the caller decides how to degrade.
         """
         if not self.enabled:
             return []
-        out: list[dict] = []
         timeout = aiohttp.ClientTimeout(total=30)
         async with aiohttp.ClientSession(timeout=timeout) as session:
-            # Active machines.
-            data = await self._get(session, "machine/list")
-            for m in (data or {}).get("info", []) if data else []:
-                norm = self._normalize(m, retired=False)
-                if norm:
-                    out.append(norm)
+            active = await self._fetch_paginated(
+                session, "machine/paginated", retired=False, max_pages=max_active_pages
+            )
+            retired = await self._fetch_paginated(
+                session, "machine/list/retired/paginated", retired=True, max_pages=max_retired_pages
+            )
 
-            # Retired machines (Laravel pagination).
-            page = 1
-            while page <= max_retired_pages:
-                data = await self._get(
-                    session, "machine/list/retired/paginated",
-                    params={"per_page": "100", "page": str(page)},
-                )
-                if not data:
-                    break
-                rows = data.get("data") or data.get("info") or []
-                if not rows:
-                    break
-                for m in rows:
-                    norm = self._normalize(m, retired=True)
-                    if norm:
-                        out.append(norm)
-                # Stop if there's no next page.
-                meta = data.get("meta") or {}
-                last_page = meta.get("last_page")
-                if last_page is not None and page >= last_page:
-                    break
-                page += 1
-
-        # De-duplicate by id (active list may overlap).
-        by_id = {m["machine_id"]: m for m in out}
-        log.info("HTB catalog fetched: %d machines", len(by_id))
+        # De-duplicate by id (retired flag on the retired list wins).
+        by_id: dict[int, dict] = {}
+        for m in active + retired:
+            by_id[m["machine_id"]] = m
+        log.info("HTB catalog fetched: %d machines (%d active, %d retired)",
+                 len(by_id), len(active), len(retired))
         return list(by_id.values())
 
 
