@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Cyber Command Center</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+  <style>
+    body { background:#0a0e14; color:#c9d1d9; font-family: ui-monospace, SFMono-Regular, Menlo, monospace; }
+    .card { background:#111722; border:1px solid #1e2733; border-radius:14px; }
+    .glow { box-shadow: 0 0 24px rgba(0,153,255,.08); }
+    ::-webkit-scrollbar{width:8px;height:8px}::-webkit-scrollbar-thumb{background:#1e2733;border-radius:8px}
+  </style>
+</head>
+<body class="min-h-screen">
+  <div class="max-w-7xl mx-auto p-5">
+    <!-- Header -->
+    <header class="flex items-center justify-between mb-6">
+      <div>
+        <h1 class="text-2xl font-bold text-white tracking-tight">🛡️ Cyber Command Center</h1>
+        <p class="text-xs text-gray-500" id="updated">loading…</p>
+      </div>
+      <div class="text-right">
+        <div class="text-[10px] uppercase tracking-widest text-gray-500">Threat Level</div>
+        <div id="threat" class="text-3xl font-black">—</div>
+      </div>
+    </header>
+
+    <!-- Stat tiles -->
+    <section class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-3 mb-5" id="tiles"></section>
+
+    <!-- Charts -->
+    <section class="grid grid-cols-1 lg:grid-cols-2 gap-4 mb-5">
+      <div class="card glow p-4">
+        <h2 class="text-sm font-semibold text-gray-300 mb-3">CVEs — last 7 days</h2>
+        <canvas id="timeline" height="120"></canvas>
+      </div>
+      <div class="card glow p-4">
+        <h2 class="text-sm font-semibold text-gray-300 mb-3">Priority distribution</h2>
+        <canvas id="priority" height="120"></canvas>
+      </div>
+    </section>
+
+    <!-- Lists -->
+    <section class="grid grid-cols-1 lg:grid-cols-3 gap-4">
+      <div class="card p-4 lg:col-span-2">
+        <h2 class="text-sm font-semibold text-gray-300 mb-3">🚨 Latest fused CVE alerts</h2>
+        <div id="alerts" class="space-y-2 text-sm"></div>
+      </div>
+      <div class="card p-4">
+        <h2 class="text-sm font-semibold text-gray-300 mb-3">🎓 Learning</h2>
+        <div id="learning" class="text-sm"></div>
+        <h2 class="text-sm font-semibold text-gray-300 mt-4 mb-2">📰 Latest news</h2>
+        <div id="news" class="space-y-1 text-xs"></div>
+      </div>
+    </section>
+
+    <footer class="text-center text-[10px] text-gray-600 mt-6">
+      Cyber Command Center • self-hosted • auto-refresh 30s
+    </footer>
+  </div>
+
+<script>
+const SEV = {CRITICAL:'#FF3B30', HIGH:'#FF9500', MEDIUM:'#FFCC00', LOW:'#34C759'};
+let timelineChart, priorityChart;
+
+async function j(u){ const r = await fetch(u); return r.json(); }
+
+// HTML-escape untrusted strings (news titles/sources come from RSS feeds).
+function esc(s){ return String(s==null?'':s).replace(/[&<>"']/g, c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
+// Only allow http(s) links; block javascript:/data: URLs.
+function safeUrl(u){ u=String(u||''); return /^https?:\/\//i.test(u) ? u.replace(/["']/g, encodeURIComponent) : '#'; }
+
+function tile(label, value, color){
+  return `<div class="card p-3">
+    <div class="text-[10px] uppercase tracking-widest text-gray-500">${label}</div>
+    <div class="text-2xl font-black" style="color:${color||'#e6edf3'}">${value}</div>
+  </div>`;
+}
+
+async function refresh(){
+  const s = await j('/api/summary');
+  document.getElementById('threat').textContent = s.threat_level;
+  document.getElementById('threat').style.color = s.threat_color;
+  document.getElementById('updated').textContent = 'updated ' + new Date().toLocaleTimeString();
+
+  document.getElementById('tiles').innerHTML = [
+    tile('Critical CVEs 24h', s.cves_24h, '#0099FF'),
+    tile('News 24h', s.news_24h),
+    tile('KEVs 24h', s.kev_24h, s.kev_24h ? '#FF3B30' : null),
+    tile('Exploited 24h', s.exploited_24h, s.exploited_24h ? '#FF9500' : null),
+    tile('Top priority', s.top_priority + '/100', SEV[s.top_priority>=80?'CRITICAL':s.top_priority>=60?'HIGH':'MEDIUM']),
+    tile('Commands 24h', s.commands_24h),
+  ].join('');
+
+  document.getElementById('learning').innerHTML = `
+    <div class="flex items-center justify-between mb-1"><span class="text-gray-400">HTB owned</span>
+      <span class="text-white font-bold">${s.htb_owned}/${s.htb_goal}</span></div>
+    <div class="w-full bg-[#1e2733] rounded-full h-2 mb-3">
+      <div class="h-2 rounded-full" style="width:${s.learning_progress}%;background:#0099FF"></div></div>
+    <div class="grid grid-cols-2 gap-2 text-xs text-gray-400">
+      <div>Sessions: <span class="text-white">${s.practice_sessions}</span></div>
+      <div>Skills: <span class="text-white">${s.distinct_skills}</span></div>
+      <div>KB docs: <span class="text-white">${s.kb_docs}</span></div>
+      <div>KB chunks: <span class="text-white">${s.kb_chunks}</span></div>
+    </div>`;
+
+  // Timeline chart
+  const tl = await j('/api/cve-timeline');
+  const labels = tl.map(x=>x.day), data = tl.map(x=>x.count);
+  if(timelineChart) timelineChart.destroy();
+  timelineChart = new Chart(document.getElementById('timeline'), {
+    type:'line',
+    data:{labels, datasets:[{data, borderColor:'#0099FF', backgroundColor:'rgba(0,153,255,.15)', fill:true, tension:.35, pointRadius:2}]},
+    options:{plugins:{legend:{display:false}}, scales:{x:{ticks:{color:'#6b7684'},grid:{display:false}}, y:{ticks:{color:'#6b7684'},grid:{color:'#1a222e'},beginAtZero:true}}}
+  });
+
+  // Priority distribution
+  const pd = await j('/api/priority-distribution');
+  const plabels = Object.keys(pd), pdata = Object.values(pd);
+  if(priorityChart) priorityChart.destroy();
+  priorityChart = new Chart(document.getElementById('priority'), {
+    type:'bar',
+    data:{labels:plabels, datasets:[{data:pdata, backgroundColor:plabels.map(l=>SEV[l])}]},
+    options:{plugins:{legend:{display:false}}, scales:{x:{ticks:{color:'#6b7684'},grid:{display:false}}, y:{ticks:{color:'#6b7684'},grid:{color:'#1a222e'},beginAtZero:true}}}
+  });
+
+  // Alerts
+  const al = await j('/api/latest-alerts');
+  document.getElementById('alerts').innerHTML = al.length ? al.map(a=>{
+    const c = SEV[a.priority_label] || '#6b7684';
+    const badges = [
+      a.kev ? '<span class="text-red-400">KEV</span>' : '',
+      a.github_poc_count ? `PoC ${a.github_poc_count}` : '',
+      a.exploitdb_count ? `EDB ${a.exploitdb_count}` : '',
+      a.epss!=null ? `EPSS ${Math.round(a.epss*100)}%` : ''
+    ].filter(Boolean).join(' · ');
+    return `<div class="flex items-center justify-between border-b border-[#1a222e] pb-1">
+      <div><a href="https://nvd.nist.gov/vuln/detail/${encodeURIComponent(a.cve_id)}" target="_blank" rel="noopener noreferrer" class="text-white hover:underline">${esc(a.cve_id)}</a>
+        <span class="text-gray-500 text-xs ml-2">${badges}</span></div>
+      <div class="font-bold" style="color:${c}">${Number(a.priority_score)||0}</div></div>`;
+  }).join('') : '<div class="text-gray-600 text-xs">No enriched CVEs yet.</div>';
+
+  // News
+  const nw = await j('/api/latest-news');
+  document.getElementById('news').innerHTML = nw.length ? nw.slice(0,6).map(n=>
+    `<div class="truncate"><a href="${safeUrl(n.url)}" target="_blank" rel="noopener noreferrer" class="text-gray-300 hover:underline">${esc(n.title)}</a>
+      <span class="text-gray-600">· ${esc(n.source||'')}</span></div>`).join('') : '<div class="text-gray-600">No news yet.</div>';
+}
+
+refresh();
+setInterval(refresh, 30000);
+</script>
+</body>
+</html>
