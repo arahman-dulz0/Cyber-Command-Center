@@ -104,4 +104,6 @@ engine. See **[docs/phase3.md](docs/phase3.md)**.
 - **Phase 5** — RAG knowledge base: `/ask` grounded in your own notes/writeups/PDFs with citations ✅
 - **Phase 6** — self-hosted SOC web dashboard (FastAPI + Chart.js, LAN-only, read-only over Postgres) ✅
 - **Phase 7** — multi-agent intelligence crew (Planner→Researcher→Analyst→Coach→Writer → `/report`) ✅
-- **Phase 8** — automation/actioning
+- **Phase 8** — automation & actioning: lab inventory match → auto-ticket + AI remediation checklist → `#announcements` escalation (+ optional email) ✅
+
+**All 8 phases complete** — a self-hosted, AI-powered cybersecurity operations platform: autonomous threat-intel collection & fusion, a personal RAG brain, a multi-agent report crew, a SOC dashboard, and closed-loop actioning.

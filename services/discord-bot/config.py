@@ -177,9 +177,25 @@ class Config:
     report_day: int = field(default_factory=lambda: _get_int("REPORT_DAY", 0))
     report_time: str = field(default_factory=lambda: _get("REPORT_TIME", "07:45"))
 
+    # --- Phase 8: automation & actioning ---------------------------------
+    action_enabled: bool = field(default_factory=lambda: _get_bool("ACTION_ENABLED", True))
+    # Minimum CCC priority for a lab-matching CVE to auto-raise a ticket.
+    action_min_priority: int = field(default_factory=lambda: _get_int("ACTION_MIN_PRIORITY", 80))
+    # Optional email notifier (SMTP). Disabled unless host + recipient are set.
+    smtp_host: str = field(default_factory=lambda: _get("SMTP_HOST", ""))
+    smtp_port: int = field(default_factory=lambda: _get_int("SMTP_PORT", 587))
+    smtp_user: str = field(default_factory=lambda: _get("SMTP_USER", ""))
+    smtp_password: str = field(default_factory=lambda: _get("SMTP_PASSWORD", ""))
+    smtp_from: str = field(default_factory=lambda: _get("SMTP_FROM", ""))
+    smtp_to: str = field(default_factory=lambda: _get("SMTP_TO", ""))
+
     @property
     def htb_enabled(self) -> bool:
         return bool(self.htb_app_token)
+
+    @property
+    def email_enabled(self) -> bool:
+        return bool(self.smtp_host and self.smtp_to)
 
     # --- Channel names (configurable; the server already has these) -------
     channel_cve_alerts: str = field(default_factory=lambda: _get("CVE_ALERTS_CHANNEL", "cve-alerts"))

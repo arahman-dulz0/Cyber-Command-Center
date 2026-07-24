@@ -13,6 +13,7 @@ from datetime import datetime, timedelta, timezone
 
 from discord.ext import commands
 
+from actioning import action_engine
 from config import config
 from database import db
 from enrichment import fusion
@@ -82,6 +83,7 @@ class CVEMonitor(BaseMonitor):
             try:
                 data = await nvd.fetch_cve(row["cve_id"])
                 references = data.references
+                row["_products"] = data.products  # for lab-matching in the action engine
                 if data.description:
                     row["description"] = data.description
             except Exception as exc:  # noqa: BLE001
@@ -145,6 +147,20 @@ class CVEMonitor(BaseMonitor):
             await channel.send(embed=embed, view=embeds.nvd_view(row["cve_id"]))
             await db.cves.mark_posted(row["cve_id"])
             posted += 1
+
+            # Phase 8: if this CVE hits the lab, auto-raise a ticket + escalate.
+            if enr is not None:
+                try:
+                    await action_engine.evaluate(
+                        self.bot,
+                        cve_id=row["cve_id"],
+                        description=row.get("description") or "",
+                        products=row.get("_products", []) or [],
+                        priority=enr.priority_score,
+                    )
+                except Exception as exc:  # noqa: BLE001 - actioning must not break posting
+                    log.error("[cve] action engine failed for %s: %s", row["cve_id"], exc)
+
             if config.cve_post_delay and posted < len(items):
                 await asyncio.sleep(config.cve_post_delay)
         return posted

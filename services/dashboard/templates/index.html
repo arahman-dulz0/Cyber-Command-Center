@@ -97,7 +97,7 @@ async function refresh(){
     tile('KEVs 24h', s.kev_24h, s.kev_24h ? '#FF3B30' : null),
     tile('Exploited 24h', s.exploited_24h, s.exploited_24h ? '#FF9500' : null),
     tile('Top priority', s.top_priority + '/100', SEV[s.top_priority>=80?'CRITICAL':s.top_priority>=60?'HIGH':'MEDIUM']),
-    tile('Commands 24h', s.commands_24h),
+    tile('Open tickets', s.open_tickets ?? 0, (s.open_tickets ?? 0) ? '#FF3B30' : null),
   ].join('');
 
   document.getElementById('learning').innerHTML = `

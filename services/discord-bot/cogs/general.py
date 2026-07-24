@@ -233,9 +233,18 @@ class General(commands.Cog):
             inline=False,
         )
         embed.add_field(
+            name="🤖 Automation",
+            value=(
+                "`/lab add|list|remove` — Manage your lab/stack inventory.\n"
+                "`/tickets` — Open action tickets (CVEs hitting your lab).\n"
+                "`/ticket-close [id]` — Close a ticket."
+            ),
+            inline=False,
+        )
+        embed.add_field(
             name="🛠️ Admin",
             value=(
-                "`/monitor [cve|news]` — Run a monitor now (admin only).\n"
+                "`/monitor [cve|news|htb]` — Run a monitor now (admin only).\n"
                 "`/reload [cog]` — Reload a cog (admin only).\n"
                 "`/sync` — Re-sync slash commands (admin only)."
             ),

@@ -21,11 +21,13 @@ from repositories import (
     CVERepository,
     EnrichmentRepository,
     KBRepository,
+    LabRepository,
     MachineRepository,
     MonitorRepository,
     NewsRepository,
     PracticeRepository,
     ReportRepository,
+    TicketRepository,
 )
 from utils.logger import db_log as log
 
@@ -192,6 +194,28 @@ CREATE TABLE IF NOT EXISTS reports (
     created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
 );
 CREATE INDEX IF NOT EXISTS idx_reports_created ON reports (created_at DESC);
+
+-- Phase 8 -----------------------------------------------------------------
+CREATE TABLE IF NOT EXISTS lab_assets (
+    id         SERIAL PRIMARY KEY,
+    name       TEXT UNIQUE NOT NULL,
+    note       TEXT,
+    added_by   TEXT,
+    created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+);
+
+CREATE TABLE IF NOT EXISTS tickets (
+    id         SERIAL PRIMARY KEY,
+    cve_id     TEXT NOT NULL,
+    assets     TEXT[] NOT NULL DEFAULT '{}',
+    priority   INTEGER NOT NULL DEFAULT 0,
+    status     TEXT NOT NULL DEFAULT 'open',
+    checklist  TEXT,
+    created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+    closed_at  TIMESTAMPTZ
+);
+CREATE INDEX IF NOT EXISTS idx_tickets_status ON tickets (status, created_at DESC);
+CREATE UNIQUE INDEX IF NOT EXISTS uq_tickets_open_cve ON tickets (cve_id) WHERE status = 'open';
 """
 
 
@@ -211,6 +235,8 @@ class Database:
         self.machines: MachineRepository | None = None
         self.kb: KBRepository | None = None
         self.reports: ReportRepository | None = None
+        self.lab: LabRepository | None = None
+        self.tickets: TicketRepository | None = None
 
     @property
     def pool(self) -> asyncpg.Pool:
@@ -239,6 +265,8 @@ class Database:
         self.machines = MachineRepository(self._pool)
         self.kb = KBRepository(self._pool)
         self.reports = ReportRepository(self._pool)
+        self.lab = LabRepository(self._pool)
+        self.tickets = TicketRepository(self._pool)
         log.info("PostgreSQL pool ready, schema ensured, repositories wired.")
 
     async def close(self) -> None:

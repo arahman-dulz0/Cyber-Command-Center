@@ -1,5 +1,6 @@
 """Repository-pattern data access layer for the Cyber Command Center bot."""
 
+from repositories.action_repository import LabRepository, TicketRepository
 from repositories.ai_repository import AIRepository, content_hash
 from repositories.base import BaseRepository
 from repositories.command_repository import CommandRepository
@@ -23,5 +24,7 @@ __all__ = [
     "MachineRepository",
     "KBRepository",
     "ReportRepository",
+    "LabRepository",
+    "TicketRepository",
     "content_hash",
 ]

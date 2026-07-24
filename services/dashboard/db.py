@@ -81,6 +81,8 @@ class Dashboard:
         commands_24h = await self._val(
             "SELECT COUNT(*) FROM command_logs WHERE created_at >= NOW() - INTERVAL '24 hours'"
         ) or 0
+        open_tickets = await self._val("SELECT COUNT(*) FROM tickets WHERE status='open'") or 0
+        lab_assets = await self._val("SELECT COUNT(*) FROM lab_assets") or 0
 
         level, color = self._threat_level(kev_24h, top_priority, exploited_24h, cves_24h)
         progress = min(100, round(htb_owned / _HTB_GOAL * 100)) if _HTB_GOAL else 0
@@ -93,6 +95,7 @@ class Dashboard:
             "practice_sessions": sessions, "distinct_skills": distinct_skills,
             "htb_owned": htb_owned, "htb_goal": _HTB_GOAL, "learning_progress": progress,
             "kb_docs": docs, "kb_chunks": chunks,
+            "open_tickets": open_tickets, "lab_assets": lab_assets,
         }
 
     @staticmethod
