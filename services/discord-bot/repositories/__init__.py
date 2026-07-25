@@ -2,6 +2,7 @@
 
 from repositories.action_repository import LabRepository, TicketRepository
 from repositories.ai_repository import AIRepository, content_hash
+from repositories.audit_repository import AuditRepository
 from repositories.base import BaseRepository
 from repositories.command_repository import CommandRepository
 from repositories.cve_repository import CVERepository
@@ -26,5 +27,6 @@ __all__ = [
     "ReportRepository",
     "LabRepository",
     "TicketRepository",
+    "AuditRepository",
     "content_hash",
 ]

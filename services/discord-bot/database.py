@@ -17,6 +17,7 @@ import asyncpg
 from config import config
 from repositories import (
     AIRepository,
+    AuditRepository,
     CommandRepository,
     CVERepository,
     EnrichmentRepository,
@@ -216,6 +217,20 @@ CREATE TABLE IF NOT EXISTS tickets (
 );
 CREATE INDEX IF NOT EXISTS idx_tickets_status ON tickets (status, created_at DESC);
 CREATE UNIQUE INDEX IF NOT EXISTS uq_tickets_open_cve ON tickets (cve_id) WHERE status = 'open';
+
+-- Security: audit log ------------------------------------------------------
+CREATE TABLE IF NOT EXISTS audit_log (
+    id         SERIAL PRIMARY KEY,
+    actor      TEXT,
+    action     TEXT NOT NULL,
+    target     TEXT,
+    detail     TEXT,
+    source     TEXT NOT NULL DEFAULT 'discord',
+    ip         TEXT,
+    created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+);
+CREATE INDEX IF NOT EXISTS idx_audit_created ON audit_log (created_at DESC);
+CREATE INDEX IF NOT EXISTS idx_audit_action  ON audit_log (action);
 """
 
 
@@ -237,6 +252,7 @@ class Database:
         self.reports: ReportRepository | None = None
         self.lab: LabRepository | None = None
         self.tickets: TicketRepository | None = None
+        self.audit: AuditRepository | None = None
 
     @property
     def pool(self) -> asyncpg.Pool:
@@ -267,6 +283,7 @@ class Database:
         self.reports = ReportRepository(self._pool)
         self.lab = LabRepository(self._pool)
         self.tickets = TicketRepository(self._pool)
+        self.audit = AuditRepository(self._pool)
         log.info("PostgreSQL pool ready, schema ensured, repositories wired.")
 
     async def close(self) -> None:

@@ -40,6 +40,10 @@ class Monitor(commands.Cog):
             return
 
         log.info("Manual monitor run '%s' by %s", target.value, interaction.user)
+        await db.audit.record(
+            actor=str(interaction.user), action="monitor.run",
+            target=target.value, source="discord",
+        )
         result = await scheduler.run_now(target.value)
         if result is None:
             await interaction.followup.send(

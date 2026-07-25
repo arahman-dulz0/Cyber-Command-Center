@@ -16,6 +16,7 @@ from config import config
 from database import db
 from utils import embeds
 from utils.logger import discord_log as log
+from utils.validation import clean_keyword, clean_text
 
 
 class Lab(commands.Cog):
@@ -27,12 +28,21 @@ class Lab(commands.Cog):
     @lab.command(name="add", description="Add a technology to your lab inventory (e.g. vmware, apache).")
     @app_commands.describe(tech="Technology/product keyword", note="Optional note")
     async def lab_add(self, interaction: discord.Interaction, tech: str, note: str | None = None) -> None:
+        tech = clean_keyword(tech)
+        if not tech:
+            await interaction.response.send_message(
+                embed=embeds.error_embed("That isn't a valid technology name.")
+            )
+            return
         await db.log_command(
             user_id=interaction.user.id, username=str(interaction.user),
             command=f"/lab add {tech}", guild_id=interaction.guild_id,
         )
-        added = await db.lab.add(name=tech, note=note, added_by=str(interaction.user))
-        msg = f"Added **{tech.lower()}** to your lab inventory." if added else f"**{tech.lower()}** is already in your inventory."
+        added = await db.lab.add(name=tech, note=clean_text(note), added_by=str(interaction.user))
+        await db.audit.record(
+            actor=str(interaction.user), action="lab.add", target=tech, source="discord"
+        )
+        msg = f"Added **{tech}** to your lab inventory." if added else f"**{tech}** is already in your inventory."
         await interaction.response.send_message(
             embed=embeds.success_embed(msg, title="🧪 Lab inventory") if added
             else embeds.base_embed(title="🧪 Lab inventory", description=msg, color=embeds.INFO)
@@ -45,8 +55,12 @@ class Lab(commands.Cog):
             user_id=interaction.user.id, username=str(interaction.user),
             command=f"/lab remove {tech}", guild_id=interaction.guild_id,
         )
+        tech = clean_keyword(tech)
         removed = await db.lab.remove(tech)
-        msg = f"Removed **{tech.lower()}**." if removed else f"**{tech.lower()}** was not in your inventory."
+        await db.audit.record(
+            actor=str(interaction.user), action="lab.remove", target=tech, source="discord"
+        )
+        msg = f"Removed **{tech}**." if removed else f"**{tech}** was not in your inventory."
         await interaction.response.send_message(
             embed=embeds.base_embed(title="🧪 Lab inventory", description=msg, color=embeds.INFO)
         )
@@ -104,6 +118,10 @@ class Lab(commands.Cog):
             command=f"/ticket-close {ticket_id}", guild_id=interaction.guild_id,
         )
         closed = await db.tickets.close(ticket_id)
+        await db.audit.record(
+            actor=str(interaction.user), action="ticket.close",
+            target=str(ticket_id), detail="closed" if closed else "not-found", source="discord",
+        )
         if closed:
             embed = embeds.success_embed(f"Ticket **#{ticket_id}** closed.", title="🎫 Tickets")
         else:

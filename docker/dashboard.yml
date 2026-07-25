@@ -17,6 +17,15 @@ services:
       - ../.env
     environment:
       TZ: ${TIMEZONE:-Asia/Colombo}
+      HOME: /tmp
+    # --- Container hardening (read-only, no caps, no privilege escalation) ---
+    security_opt:
+      - no-new-privileges:true
+    cap_drop:
+      - ALL
+    read_only: true
+    tmpfs:
+      - /tmp:size=32m
     ports:
       - "8080:8080"     # LAN-only: reachable at http://<server-ip>:8080
     restart: unless-stopped

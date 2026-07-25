@@ -36,6 +36,9 @@ class Admin(commands.Cog):
         try:
             await self.bot.reload_extension(f"cogs.{cog.value}")
             log.info("Cog reloaded by %s: %s", interaction.user, cog.value)
+            await db.audit.record(
+                actor=str(interaction.user), action="cog.reload", target=cog.value, source="discord"
+            )
             await interaction.response.send_message(
                 embed=embeds.success_embed(f"Reloaded `cogs.{cog.value}`."),
                 ephemeral=True,
@@ -65,6 +68,10 @@ class Admin(commands.Cog):
             else:
                 synced = await self.bot.tree.sync()
             log.info("Commands synced by %s (%d commands)", interaction.user, len(synced))
+            await db.audit.record(
+                actor=str(interaction.user), action="commands.sync",
+                detail=f"{len(synced)} commands", source="discord",
+            )
             await interaction.followup.send(
                 embed=embeds.success_embed(f"Synced **{len(synced)}** commands."),
             )

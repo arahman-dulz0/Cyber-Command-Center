@@ -17,6 +17,7 @@ from database import db
 from learning.recommender import recommender
 from utils import embeds
 from utils.logger import discord_log as log
+from utils.validation import clean_keyword, clean_skills, clean_text
 
 _PLATFORMS = ["HTB", "TryHackMe", "CTF", "Other"]
 _DIFFICULTIES = ["Easy", "Medium", "Hard", "Insane"]
@@ -51,15 +52,21 @@ class Learning(commands.Cog):
             user_id=interaction.user.id, username=str(interaction.user),
             command="/practiced", guild_id=interaction.guild_id,
         )
-        skill_list = [s.strip() for s in skills.split(",") if s.strip()]
+        machine = clean_keyword(machine, maxlen=60)
+        skill_list = clean_skills(skills)
+        if not machine:
+            await interaction.response.send_message(
+                embed=embeds.error_embed("That isn't a valid machine name.")
+            )
+            return
         await db.practice.add(
             user_id=interaction.user.id,
             username=str(interaction.user),
-            machine=machine.strip(),
+            machine=machine,
             platform=platform.value if platform else "HTB",
             skills=skill_list,
             difficulty=difficulty.value if difficulty else None,
-            notes=notes,
+            notes=clean_text(notes),
         )
         log.info("%s logged practice: %s (%s)", interaction.user, machine, skill_list)
 

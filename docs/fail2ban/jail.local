@@ -1,0 +1,10 @@
+# fail2ban jail for the Cyber Command Center dashboard.
+# Place/merge at /etc/fail2ban/jail.local
+[ccc-dashboard]
+enabled  = true
+filter   = ccc-dashboard
+logpath  = /var/log/ccc-dashboard.log
+maxretry = 8
+findtime = 120
+bantime  = 3600
+action   = iptables-allports[name=ccc-dashboard]

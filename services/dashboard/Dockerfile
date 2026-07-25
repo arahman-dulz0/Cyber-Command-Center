@@ -23,4 +23,5 @@ RUN chown -R cyber:cyber /app
 USER cyber
 
 EXPOSE 8080
-CMD ["uvicorn", "app:app", "--host", "0.0.0.0", "--port", "8080"]
+# --no-server-header: don't disclose the server software (defence in depth).
+CMD ["uvicorn", "app:app", "--host", "0.0.0.0", "--port", "8080", "--no-server-header", "--proxy-headers"]

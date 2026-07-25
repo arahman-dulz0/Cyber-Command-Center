@@ -49,6 +49,16 @@ class Dashboard:
         except Exception:
             return None
 
+    async def audit(self, *, actor: str | None, action: str, source: str, ip: str | None) -> None:
+        """Write a security audit event (best-effort; table owned by the bot schema)."""
+        try:
+            await self.pool.execute(
+                "INSERT INTO audit_log (actor, action, source, ip) VALUES ($1,$2,$3,$4);",
+                actor, action, source, ip,
+            )
+        except Exception:
+            pass
+
     # --- Summary tiles ---------------------------------------------------
     async def summary(self) -> dict[str, Any]:
         cves_24h = await self._val(
