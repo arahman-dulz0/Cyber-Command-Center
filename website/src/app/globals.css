@@ -1,0 +1,144 @@
+@import "tailwindcss";
+
+/* ---------------------------------------------------------------- tokens */
+@theme {
+  --color-bg: #05070d;
+  --color-bg2: #070b16;
+  --color-panel: #0b1120;
+  --color-panel2: #0e1626;
+  --color-ink: #e8eef7;
+  --color-muted: #97a4b9;
+  --color-faint: #5b6577;
+  --color-line: #1b2436;
+  --color-blue: #4c82fb;
+  --color-cyan: #34e4ea;
+  --color-violet: #9b6cff;
+  --color-red: #ff4d4d;
+  --color-amber: #ffb020;
+  --color-green: #34d399;
+
+  --font-display: var(--font-space), ui-sans-serif, system-ui, sans-serif;
+  --font-sans: var(--font-inter), ui-sans-serif, system-ui, sans-serif;
+  --font-mono: var(--font-jbmono), ui-monospace, monospace;
+
+  --shadow-glass: 0 1px 0 0 rgba(255, 255, 255, 0.04) inset,
+    0 24px 60px -24px rgba(0, 0, 0, 0.75);
+}
+
+/* ------------------------------------------------------------------ base */
+:root {
+  color-scheme: dark;
+}
+html {
+  scroll-behavior: smooth;
+}
+body {
+  background: var(--color-bg);
+  color: var(--color-ink);
+  font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+  overflow-x: hidden;
+}
+::selection {
+  background: color-mix(in srgb, var(--color-blue) 35%, transparent);
+  color: #fff;
+}
+::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+::-webkit-scrollbar-thumb {
+  background: #182031;
+  border-radius: 8px;
+  border: 2px solid var(--color-bg);
+}
+
+/* ------------------------------------------------------------- utilities */
+.glass {
+  background: linear-gradient(
+    180deg,
+    rgba(255, 255, 255, 0.05),
+    rgba(255, 255, 255, 0.014)
+  );
+  border: 1px solid var(--color-line);
+  backdrop-filter: blur(14px);
+  box-shadow: var(--shadow-glass);
+}
+.gradient-text {
+  background: linear-gradient(
+    100deg,
+    var(--color-ink) 18%,
+    var(--color-cyan) 55%,
+    var(--color-violet) 92%
+  );
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+.accent-text {
+  background: linear-gradient(
+    100deg,
+    var(--color-blue),
+    var(--color-cyan) 60%,
+    var(--color-violet)
+  );
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+.eyebrow {
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--color-cyan);
+}
+/* subtle instrument-grid backdrop */
+.grid-field {
+  background-image: linear-gradient(
+      to right,
+      rgba(148, 163, 184, 0.05) 1px,
+      transparent 1px
+    ),
+    linear-gradient(to bottom, rgba(148, 163, 184, 0.05) 1px, transparent 1px);
+  background-size: 46px 46px;
+  -webkit-mask-image: radial-gradient(
+    ellipse 78% 60% at 50% 38%,
+    #000 42%,
+    transparent 100%
+  );
+  mask-image: radial-gradient(
+    ellipse 78% 60% at 50% 38%,
+    #000 42%,
+    transparent 100%
+  );
+}
+.glow-blue {
+  box-shadow: 0 0 0 1px rgba(76, 130, 251, 0.25),
+    0 0 70px -14px rgba(76, 130, 251, 0.55);
+}
+
+@keyframes floaty {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-8px);
+  }
+}
+.animate-floaty {
+  animation: floaty 6s ease-in-out infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+    scroll-behavior: auto !important;
+  }
+}
