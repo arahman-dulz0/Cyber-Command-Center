@@ -1,0 +1,61 @@
+# Operations stack for Cyber Command Center — monitoring, log viewing,
+# auto-heal and (conservative) auto-updates. Lightweight enough for the VM.
+#
+#   docker compose -f docker/ops.yml up -d
+#
+# Services:
+#   autoheal      restarts any container labelled `autoheal=true` when it goes
+#                 unhealthy (bot + dashboard carry that label).
+#   uptime-kuma   self-hosted uptime monitor + status page  ->  :3001
+#   dozzle        real-time web log viewer for every container -> :8888
+#
+# Auto-updates: the bot and dashboard are built locally (not pulled from a
+# registry), so an image-updater like Watchtower cannot update them. Use
+# scripts/update.sh (git pull -> validate -> rebuild -> up) instead — the correct
+# auto-update path for locally-built images. Databases are never auto-updated.
+#
+# NOTE: these mount the Docker socket. autoheal needs write access to restart
+# containers; dozzle mounts it read-only. Keep their ports on the LAN only.
+
+services:
+  autoheal:
+    container_name: cyber-autoheal
+    image: willfarrell/autoheal:latest
+    restart: always
+    environment:
+      AUTOHEAL_CONTAINER_LABEL: autoheal
+      AUTOHEAL_INTERVAL: 15
+      AUTOHEAL_START_PERIOD: 60
+      DOCKER_SOCK: /var/run/docker.sock
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+
+  uptime-kuma:
+    container_name: cyber-uptime-kuma
+    image: louislam/uptime-kuma:1
+    restart: unless-stopped
+    ports:
+      - "3001:3001"
+    volumes:
+      - uptime-kuma-data:/app/data
+    networks:
+      - cyber-net
+
+  dozzle:
+    container_name: cyber-dozzle
+    image: amir20/dozzle:latest
+    restart: unless-stopped
+    ports:
+      - "8888:8080"
+    environment:
+      DOZZLE_NO_ANALYTICS: "true"
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+
+volumes:
+  uptime-kuma-data:
+
+networks:
+  cyber-net:
+    external: true
+    name: docker_cyber-net

@@ -16,6 +16,7 @@ import asyncio
 import time
 import traceback
 from datetime import datetime, timedelta
+from pathlib import Path
 
 import discord
 import redis.asyncio as aioredis
@@ -98,6 +99,7 @@ class CyberCommandBot(commands.Bot):
         self.daily_brief_task.start()
         self.weekly_recommend_task.start()
         self.weekly_report_task.start()
+        self.heartbeat_task.start()
 
     async def on_ready(self) -> None:
         log.info("Logged in as %s (id: %s)", self.user, self.user.id if self.user else "?")
@@ -114,6 +116,7 @@ class CyberCommandBot(commands.Bot):
         self.daily_brief_task.cancel()
         self.weekly_recommend_task.cancel()
         self.weekly_report_task.cancel()
+        self.heartbeat_task.cancel()
         if self.redis is not None:
             await self.redis.aclose()
         await db.close()
@@ -175,6 +178,18 @@ class CyberCommandBot(commands.Bot):
             if channel is not None:
                 return channel
         return None
+
+    # --- Liveness heartbeat (for the container healthcheck) -------------
+    @tasks.loop(seconds=30)
+    async def heartbeat_task(self) -> None:
+        try:
+            Path("/app/logs/heartbeat").write_text(str(int(time.time())))
+        except Exception:  # noqa: BLE001 - never let the heartbeat crash the loop
+            pass
+
+    @heartbeat_task.before_loop
+    async def _before_heartbeat(self) -> None:
+        await self.wait_until_ready()
 
     # --- Daily briefing scheduler ---------------------------------------
     @tasks.loop(hours=24)  # first run aligned by _before_brief below

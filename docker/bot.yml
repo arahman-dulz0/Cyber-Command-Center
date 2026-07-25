@@ -31,6 +31,17 @@ services:
       # shadow the Python package `knowledge/` baked into the image.
       - ../knowledge:/data/knowledge
     restart: unless-stopped
+    # Liveness: the healthcheck passes only while the event loop keeps the
+    # heartbeat file fresh. Combined with the autoheal container (ops.yml),
+    # an unhealthy bot is restarted automatically.
+    healthcheck:
+      test: ["CMD", "python", "healthcheck.py"]
+      interval: 60s
+      timeout: 10s
+      retries: 3
+      start_period: 45s
+    labels:
+      - "autoheal=true"
     # Join the existing infrastructure network so the bot can reach the
     # postgres/redis containers by service name (their ports are not published
     # to the host). Ollama runs on the host and is reached via the LAN IP.
