@@ -195,6 +195,17 @@ class General(commands.Cog):
             color=embeds.INFO,
         )
         embed.add_field(
+            name="✨ AI Security Analyst — start here",
+            value=(
+                "`/analyst [question]` — Ask anything in plain English; it searches "
+                "your assets, CVEs, KEV, tickets, news & knowledge base, then answers.\n"
+                "`/chat [message]` — Same brain, conversational (remembers context).\n"
+                "> _Try:_ *what should I patch today?* · *does CVE-2021-44228 affect my lab?* "
+                "· *summarise overnight threats* · *what's actively exploited?*"
+            ),
+            inline=False,
+        )
+        embed.add_field(
             name="🤖 AI & Knowledge",
             value=(
                 "`/ask [question]` — Ask the AI (grounded in your notes when relevant).\n"

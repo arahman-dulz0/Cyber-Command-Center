@@ -30,6 +30,7 @@ from utils import embeds
 from utils.logger import discord_log as log
 
 INITIAL_COGS = (
+    "cogs.analyst",
     "cogs.ai",
     "cogs.cve",
     "cogs.news",

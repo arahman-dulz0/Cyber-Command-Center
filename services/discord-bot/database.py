@@ -17,6 +17,7 @@ import asyncpg
 from config import config
 from repositories import (
     AIRepository,
+    AnalystRepository,
     AuditRepository,
     CommandRepository,
     CVERepository,
@@ -231,6 +232,22 @@ CREATE TABLE IF NOT EXISTS audit_log (
 );
 CREATE INDEX IF NOT EXISTS idx_audit_created ON audit_log (created_at DESC);
 CREATE INDEX IF NOT EXISTS idx_audit_action  ON audit_log (action);
+
+-- AI Analyst interaction log -----------------------------------------------
+CREATE TABLE IF NOT EXISTS analyst_log (
+    id         SERIAL PRIMARY KEY,
+    user_id    BIGINT,
+    username   TEXT,
+    query      TEXT NOT NULL,
+    intent     TEXT,
+    tools      TEXT[] NOT NULL DEFAULT '{}',
+    sources    TEXT[] NOT NULL DEFAULT '{}',
+    used_llm   BOOLEAN NOT NULL DEFAULT FALSE,
+    elapsed_ms INTEGER NOT NULL DEFAULT 0,
+    created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+);
+CREATE INDEX IF NOT EXISTS idx_analystlog_created ON analyst_log (created_at DESC);
+CREATE INDEX IF NOT EXISTS idx_analystlog_intent  ON analyst_log (intent);
 """
 
 
@@ -253,6 +270,7 @@ class Database:
         self.lab: LabRepository | None = None
         self.tickets: TicketRepository | None = None
         self.audit: AuditRepository | None = None
+        self.analyst: AnalystRepository | None = None
 
     @property
     def pool(self) -> asyncpg.Pool:
@@ -284,6 +302,7 @@ class Database:
         self.lab = LabRepository(self._pool)
         self.tickets = TicketRepository(self._pool)
         self.audit = AuditRepository(self._pool)
+        self.analyst = AnalystRepository(self._pool)
         log.info("PostgreSQL pool ready, schema ensured, repositories wired.")
 
     async def close(self) -> None:
