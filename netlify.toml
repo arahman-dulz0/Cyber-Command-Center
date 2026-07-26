@@ -1,0 +1,11 @@
+# Netlify build config — the Next.js site lives in the website/ subfolder.
+# Netlify auto-detects Next.js and applies @netlify/plugin-nextjs; we only need
+# to point it at the base directory and use the project's build script (which
+# runs the prebuild docs-sync step).
+
+[build]
+  base = "website"
+  command = "npm run build"
+
+[build.environment]
+  NODE_VERSION = "20"
