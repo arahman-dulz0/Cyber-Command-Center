@@ -54,6 +54,37 @@ cyber-command-center/
 
 ## Quick start
 
+### Try the dashboard in one command (no config)
+
+Spins up Postgres pre-loaded with a **real-CVE demo dataset** and the SOC
+dashboard — no `.env`, no API keys, no model download:
+
+```bash
+git clone https://github.com/cyber-command-center/oss.git
+cd oss
+docker compose up -d
+# open http://localhost:8080  → a fully-populated dashboard
+```
+
+The demo data is seeded from **real, publicly-documented CVEs** (Log4Shell,
+Spring4Shell, MOVEit, Citrix Bleed, …) — see `docker/demo/initdb/`.
+
+### Run the full platform (Discord bot + AI)
+
+Adds the Discord bot, Redis and a local Ollama:
+
+```bash
+cp .env.example .env                 # set DISCORD_TOKEN (+ DISCORD_GUILD_ID)
+docker compose --profile full up -d
+docker compose exec ollama ollama pull qwen2.5:3b
+docker compose exec ollama ollama pull nomic-embed-text
+```
+
+### Production deploy (against existing infrastructure)
+
+For a server that already runs Postgres/Redis/Ollama on `docker_cyber-net`, use
+the split compose files and the deploy script:
+
 ```bash
 cp services/discord-bot/.env.example .env   # then fill in DISCORD_TOKEN etc.
 ./scripts/deploy.sh

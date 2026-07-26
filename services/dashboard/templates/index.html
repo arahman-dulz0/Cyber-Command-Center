@@ -7,9 +7,25 @@
   <script src="https://cdn.tailwindcss.com"></script>
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
   <style>
-    body { background:#0a0e14; color:#c9d1d9; font-family: ui-monospace, SFMono-Regular, Menlo, monospace; }
-    .card { background:#111722; border:1px solid #1e2733; border-radius:14px; }
-    .glow { box-shadow: 0 0 24px rgba(0,153,255,.08); }
+    :root{
+      --bg:#05070d; --bg2:#070b16; --panel:#0b1120; --panel2:#0e1626; --line:#1b2436;
+      --ink:#e8eef7; --muted:#97a4b9; --faint:#5b6577;
+      --blue:#4c82fb; --cyan:#34e4ea; --violet:#9b6cff;
+      --red:#FF3B30; --amber:#FF9500; --yellow:#FFCC00; --green:#34C759;
+    }
+    body{ background:radial-gradient(1200px 600px at 80% -10%, rgba(76,130,251,.08), transparent 60%),
+                     radial-gradient(1000px 500px at -10% 10%, rgba(155,108,255,.06), transparent 55%), var(--bg);
+          color:var(--ink); font-family:ui-sans-serif,system-ui,-apple-system,Segoe UI,Roboto,sans-serif; }
+    .mono{ font-family:ui-monospace,SFMono-Regular,Menlo,monospace; }
+    .card{ background:linear-gradient(180deg,var(--panel),var(--panel2)); border:1px solid var(--line);
+           border-radius:16px; }
+    .card:hover{ border-color:#26324a; }
+    .glow{ box-shadow:0 0 40px rgba(76,130,251,.06); }
+    .grad{ background:linear-gradient(90deg,var(--blue),var(--cyan) 55%,var(--violet));
+           -webkit-background-clip:text; background-clip:text; color:transparent; }
+    .eyebrow{ letter-spacing:.18em; text-transform:uppercase; font-size:10px; color:var(--faint); }
+    .ring{ border-radius:50%; display:grid; place-items:center; }
+    a.lnk:hover{ text-decoration:underline; }
     ::-webkit-scrollbar{width:8px;height:8px}::-webkit-scrollbar-thumb{background:#1e2733;border-radius:8px}
   </style>
 </head>
@@ -17,71 +33,123 @@
   <div class="max-w-7xl mx-auto p-5">
     <!-- Header -->
     <header class="flex items-center justify-between mb-6">
-      <div>
-        <h1 class="text-2xl font-bold text-white tracking-tight">🛡️ Cyber Command Center</h1>
-        <p class="text-xs text-gray-500" id="updated">loading…</p>
+      <div class="flex items-center gap-3">
+        <div class="h-9 w-9 rounded-xl grid place-items-center"
+             style="background:linear-gradient(135deg,var(--blue),var(--violet))">🛡️</div>
+        <div>
+          <h1 class="text-xl font-bold tracking-tight grad">Cyber Command Center</h1>
+          <p class="eyebrow" id="updated">loading…</p>
+        </div>
       </div>
       <div class="text-right">
-        <div class="text-[10px] uppercase tracking-widest text-gray-500">Threat Level</div>
-        <div id="threat" class="text-3xl font-black">—</div>
+        <div class="eyebrow">Threat Level</div>
+        <div id="threat" class="text-2xl font-black mono">—</div>
       </div>
     </header>
 
-    <!-- Stat tiles -->
-    <section class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-3 mb-5" id="tiles"></section>
+    <!-- Hero: security score + headline posture -->
+    <section class="grid grid-cols-1 lg:grid-cols-3 gap-4 mb-4">
+      <div class="card glow p-5 flex items-center gap-5">
+        <div id="scoreRing" class="ring shrink-0" style="width:120px;height:120px;background:conic-gradient(var(--faint) 0deg,#0000 0deg)">
+          <div class="ring" style="width:100px;height:100px;background:var(--panel)">
+            <div class="text-center leading-none">
+              <div id="scoreNum" class="text-3xl font-black mono">–</div>
+              <div class="eyebrow mt-1">/ 100</div>
+            </div>
+          </div>
+        </div>
+        <div class="min-w-0">
+          <div class="eyebrow">Security Score</div>
+          <div class="flex items-baseline gap-2">
+            <div id="scoreGrade" class="text-2xl font-black">–</div>
+            <div class="text-xs text-[var(--muted)]">posture grade</div>
+          </div>
+          <div id="scoreFactors" class="mt-2 space-y-1 text-xs text-[var(--muted)]"></div>
+        </div>
+      </div>
+
+      <div class="card p-5 lg:col-span-2">
+        <div class="eyebrow mb-3">Live posture · last 24h</div>
+        <div id="headline" class="grid grid-cols-2 sm:grid-cols-4 gap-4"></div>
+      </div>
+    </section>
+
+    <!-- Assets + KPI tiles -->
+    <section class="grid grid-cols-1 lg:grid-cols-3 gap-4 mb-4">
+      <div class="card p-5">
+        <div class="eyebrow mb-3">🖥️ Lab assets</div>
+        <div class="flex items-end justify-between mb-3">
+          <div><div id="assetTotal" class="text-4xl font-black mono">0</div>
+               <div class="eyebrow">monitored</div></div>
+          <div class="text-right text-xs">
+            <div class="text-[var(--green)]"><span id="assetHealthy" class="font-bold mono">0</span> healthy</div>
+            <div class="text-[var(--amber)]"><span id="assetPatch" class="font-bold mono">0</span> needs patch</div>
+          </div>
+        </div>
+        <div class="w-full h-2 rounded-full overflow-hidden bg-[#141c2c] flex">
+          <div id="barHealthy" class="h-2" style="width:0%;background:var(--green)"></div>
+          <div id="barPatch" class="h-2" style="width:0%;background:var(--amber)"></div>
+        </div>
+      </div>
+      <section class="lg:col-span-2 grid grid-cols-2 sm:grid-cols-3 gap-3" id="tiles"></section>
+    </section>
 
     <!-- Charts -->
-    <section class="grid grid-cols-1 lg:grid-cols-2 gap-4 mb-5">
-      <div class="card glow p-4">
-        <h2 class="text-sm font-semibold text-gray-300 mb-3">CVEs — last 7 days</h2>
-        <canvas id="timeline" height="120"></canvas>
+    <section class="grid grid-cols-1 lg:grid-cols-3 gap-4 mb-4">
+      <div class="card glow p-4 lg:col-span-2">
+        <h2 class="text-sm font-semibold text-[var(--ink)] mb-3">Threat activity — last 7 days</h2>
+        <canvas id="trend" height="110"></canvas>
       </div>
       <div class="card glow p-4">
-        <h2 class="text-sm font-semibold text-gray-300 mb-3">Priority distribution</h2>
-        <canvas id="priority" height="120"></canvas>
+        <h2 class="text-sm font-semibold text-[var(--ink)] mb-3">Severity mix</h2>
+        <canvas id="severity" height="110"></canvas>
       </div>
     </section>
 
     <!-- Lists -->
     <section class="grid grid-cols-1 lg:grid-cols-3 gap-4">
       <div class="card p-4 lg:col-span-2">
-        <h2 class="text-sm font-semibold text-gray-300 mb-3">🚨 Latest fused CVE alerts</h2>
+        <h2 class="text-sm font-semibold text-[var(--ink)] mb-3">🚨 Latest fused CVE alerts</h2>
         <div id="alerts" class="space-y-2 text-sm"></div>
       </div>
       <div class="card p-4">
-        <h2 class="text-sm font-semibold text-gray-300 mb-3">🎓 Learning</h2>
+        <h2 class="text-sm font-semibold text-[var(--ink)] mb-3">🎓 Learning</h2>
         <div id="learning" class="text-sm"></div>
-        <h2 class="text-sm font-semibold text-gray-300 mt-4 mb-2">📰 Latest news</h2>
+        <h2 class="text-sm font-semibold text-[var(--ink)] mt-4 mb-2">📰 Latest news</h2>
         <div id="news" class="space-y-1 text-xs"></div>
       </div>
     </section>
 
     <!-- Agent reports -->
     <section class="card p-4 mt-4">
-      <h2 class="text-sm font-semibold text-gray-300 mb-3">🧠 Latest intelligence reports <span class="text-gray-600 text-xs">· agent crew</span></h2>
+      <h2 class="text-sm font-semibold text-[var(--ink)] mb-3">🧠 Latest intelligence reports
+        <span class="text-[var(--faint)] text-xs">· agent crew</span></h2>
       <div id="reports" class="space-y-2 text-sm"></div>
     </section>
 
-    <footer class="text-center text-[10px] text-gray-600 mt-6">
+    <footer class="text-center eyebrow mt-6">
       Cyber Command Center • self-hosted • auto-refresh 30s
     </footer>
   </div>
 
 <script>
 const SEV = {CRITICAL:'#FF3B30', HIGH:'#FF9500', MEDIUM:'#FFCC00', LOW:'#34C759'};
-let timelineChart, priorityChart;
+let trendChart, severityChart;
 
 async function j(u){ const r = await fetch(u); return r.json(); }
-
-// HTML-escape untrusted strings (news titles/sources come from RSS feeds).
 function esc(s){ return String(s==null?'':s).replace(/[&<>"']/g, c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
-// Only allow http(s) links; block javascript:/data: URLs.
 function safeUrl(u){ u=String(u||''); return /^https?:\/\//i.test(u) ? u.replace(/["']/g, encodeURIComponent) : '#'; }
 
 function tile(label, value, color){
   return `<div class="card p-3">
-    <div class="text-[10px] uppercase tracking-widest text-gray-500">${label}</div>
-    <div class="text-2xl font-black" style="color:${color||'#e6edf3'}">${value}</div>
+    <div class="eyebrow">${label}</div>
+    <div class="text-2xl font-black mono" style="color:${color||'var(--ink)'}">${value}</div>
+  </div>`;
+}
+function headlineStat(label, value, color){
+  return `<div>
+    <div class="text-3xl font-black mono" style="color:${color||'var(--ink)'}">${value}</div>
+    <div class="eyebrow mt-1">${label}</div>
   </div>`;
 }
 
@@ -91,76 +159,112 @@ async function refresh(){
   document.getElementById('threat').style.color = s.threat_color;
   document.getElementById('updated').textContent = 'updated ' + new Date().toLocaleTimeString();
 
-  document.getElementById('tiles').innerHTML = [
-    tile('Critical CVEs 24h', s.cves_24h, '#0099FF'),
-    tile('News 24h', s.news_24h),
-    tile('KEVs 24h', s.kev_24h, s.kev_24h ? '#FF3B30' : null),
-    tile('Exploited 24h', s.exploited_24h, s.exploited_24h ? '#FF9500' : null),
-    tile('Top priority', s.top_priority + '/100', SEV[s.top_priority>=80?'CRITICAL':s.top_priority>=60?'HIGH':'MEDIUM']),
-    tile('Open tickets', s.open_tickets ?? 0, (s.open_tickets ?? 0) ? '#FF3B30' : null),
+  // Security score ring
+  const sc = await j('/api/security-score');
+  const ring = document.getElementById('scoreRing');
+  ring.style.background = `conic-gradient(${sc.color} ${sc.score*3.6}deg, #141c2c 0deg)`;
+  document.getElementById('scoreNum').textContent = sc.score;
+  document.getElementById('scoreNum').style.color = sc.color;
+  const g = document.getElementById('scoreGrade');
+  g.textContent = 'Grade ' + sc.grade; g.style.color = sc.color;
+  document.getElementById('scoreFactors').innerHTML = (sc.factors||[]).length
+    ? sc.factors.map(f=>`<div class="flex justify-between gap-4"><span>${esc(f.label)}</span>
+        <span class="mono text-[var(--red)]">${f.delta}</span></div>`).join('')
+    : '<div class="text-[var(--green)]">No active risk factors — clean posture.</div>';
+
+  // Headline posture
+  document.getElementById('headline').innerHTML = [
+    headlineStat('Critical CVEs 24h', s.cves_24h, 'var(--blue)'),
+    headlineStat('Known exploited (KEV)', s.kev_24h, s.kev_24h?'var(--red)':null),
+    headlineStat('Public exploits', s.exploited_24h, s.exploited_24h?'var(--amber)':null),
+    headlineStat('Open tickets', s.open_tickets ?? 0, (s.open_tickets??0)?'var(--red)':null),
   ].join('');
 
+  // Assets summary
+  const as = await j('/api/assets-summary');
+  document.getElementById('assetTotal').textContent = as.total;
+  document.getElementById('assetHealthy').textContent = as.healthy;
+  document.getElementById('assetPatch').textContent = as.needs_patch;
+  const tot = as.total || 1;
+  document.getElementById('barHealthy').style.width = (as.healthy/tot*100)+'%';
+  document.getElementById('barPatch').style.width = (as.needs_patch/tot*100)+'%';
+
+  // KPI tiles
+  document.getElementById('tiles').innerHTML = [
+    tile('News 24h', s.news_24h),
+    tile('Top priority', (s.top_priority||0) + '/100', SEV[s.top_priority>=80?'CRITICAL':s.top_priority>=60?'HIGH':'MEDIUM']),
+    tile('Commands 24h', s.commands_24h ?? 0, 'var(--cyan)'),
+    tile('KB docs', s.kb_docs ?? 0),
+    tile('Practice sessions', s.practice_sessions ?? 0),
+    tile('Skills covered', s.distinct_skills ?? 0, 'var(--violet)'),
+  ].join('');
+
+  // Learning
   document.getElementById('learning').innerHTML = `
-    <div class="flex items-center justify-between mb-1"><span class="text-gray-400">HTB owned</span>
-      <span class="text-white font-bold">${s.htb_owned}/${s.htb_goal}</span></div>
-    <div class="w-full bg-[#1e2733] rounded-full h-2 mb-3">
-      <div class="h-2 rounded-full" style="width:${s.learning_progress}%;background:#0099FF"></div></div>
-    <div class="grid grid-cols-2 gap-2 text-xs text-gray-400">
-      <div>Sessions: <span class="text-white">${s.practice_sessions}</span></div>
-      <div>Skills: <span class="text-white">${s.distinct_skills}</span></div>
-      <div>KB docs: <span class="text-white">${s.kb_docs}</span></div>
-      <div>KB chunks: <span class="text-white">${s.kb_chunks}</span></div>
+    <div class="flex items-center justify-between mb-1"><span class="text-[var(--muted)]">HTB owned</span>
+      <span class="text-white font-bold mono">${s.htb_owned}/${s.htb_goal}</span></div>
+    <div class="w-full bg-[#141c2c] rounded-full h-2 mb-3">
+      <div class="h-2 rounded-full" style="width:${s.learning_progress}%;background:linear-gradient(90deg,var(--blue),var(--cyan))"></div></div>
+    <div class="grid grid-cols-2 gap-2 text-xs text-[var(--muted)]">
+      <div>Sessions: <span class="text-white mono">${s.practice_sessions}</span></div>
+      <div>Skills: <span class="text-white mono">${s.distinct_skills}</span></div>
+      <div>KB docs: <span class="text-white mono">${s.kb_docs}</span></div>
+      <div>KB chunks: <span class="text-white mono">${s.kb_chunks}</span></div>
     </div>`;
 
-  // Timeline chart
-  const tl = await j('/api/cve-timeline');
-  const labels = tl.map(x=>x.day), data = tl.map(x=>x.count);
-  if(timelineChart) timelineChart.destroy();
-  timelineChart = new Chart(document.getElementById('timeline'), {
+  // Trend chart (CVEs + KEV)
+  const tr = await j('/api/activity-trend');
+  const labels = tr.map(x=>x.day);
+  if(trendChart) trendChart.destroy();
+  trendChart = new Chart(document.getElementById('trend'), {
     type:'line',
-    data:{labels, datasets:[{data, borderColor:'#0099FF', backgroundColor:'rgba(0,153,255,.15)', fill:true, tension:.35, pointRadius:2}]},
-    options:{plugins:{legend:{display:false}}, scales:{x:{ticks:{color:'#6b7684'},grid:{display:false}}, y:{ticks:{color:'#6b7684'},grid:{color:'#1a222e'},beginAtZero:true}}}
+    data:{labels, datasets:[
+      {label:'New CVEs', data:tr.map(x=>x.cves), borderColor:'#4c82fb', backgroundColor:'rgba(76,130,251,.15)', fill:true, tension:.35, pointRadius:2},
+      {label:'KEV', data:tr.map(x=>x.kev), borderColor:'#FF3B30', backgroundColor:'rgba(255,59,48,.10)', fill:true, tension:.35, pointRadius:2},
+    ]},
+    options:{plugins:{legend:{display:true,labels:{color:'#97a4b9',boxWidth:10,font:{size:10}}}},
+      scales:{x:{ticks:{color:'#5b6577'},grid:{display:false}}, y:{ticks:{color:'#5b6577'},grid:{color:'#141c2c'},beginAtZero:true}}}
   });
 
-  // Priority distribution
+  // Severity doughnut
   const pd = await j('/api/priority-distribution');
   const plabels = Object.keys(pd), pdata = Object.values(pd);
-  if(priorityChart) priorityChart.destroy();
-  priorityChart = new Chart(document.getElementById('priority'), {
-    type:'bar',
-    data:{labels:plabels, datasets:[{data:pdata, backgroundColor:plabels.map(l=>SEV[l])}]},
-    options:{plugins:{legend:{display:false}}, scales:{x:{ticks:{color:'#6b7684'},grid:{display:false}}, y:{ticks:{color:'#6b7684'},grid:{color:'#1a222e'},beginAtZero:true}}}
+  if(severityChart) severityChart.destroy();
+  severityChart = new Chart(document.getElementById('severity'), {
+    type:'doughnut',
+    data:{labels:plabels, datasets:[{data:pdata, backgroundColor:plabels.map(l=>SEV[l]), borderColor:'#0b1120', borderWidth:2}]},
+    options:{cutout:'62%', plugins:{legend:{position:'bottom',labels:{color:'#97a4b9',boxWidth:10,font:{size:10}}}}}
   });
 
   // Alerts
   const al = await j('/api/latest-alerts');
   document.getElementById('alerts').innerHTML = al.length ? al.map(a=>{
-    const c = SEV[a.priority_label] || '#6b7684';
+    const c = SEV[a.priority_label] || '#5b6577';
     const badges = [
-      a.kev ? '<span class="text-red-400">KEV</span>' : '',
+      a.kev ? '<span class="text-[var(--red)] font-semibold">KEV</span>' : '',
       a.github_poc_count ? `PoC ${a.github_poc_count}` : '',
       a.exploitdb_count ? `EDB ${a.exploitdb_count}` : '',
       a.epss!=null ? `EPSS ${Math.round(a.epss*100)}%` : ''
     ].filter(Boolean).join(' · ');
-    return `<div class="flex items-center justify-between border-b border-[#1a222e] pb-1">
-      <div><a href="https://nvd.nist.gov/vuln/detail/${encodeURIComponent(a.cve_id)}" target="_blank" rel="noopener noreferrer" class="text-white hover:underline">${esc(a.cve_id)}</a>
-        <span class="text-gray-500 text-xs ml-2">${badges}</span></div>
-      <div class="font-bold" style="color:${c}">${Number(a.priority_score)||0}</div></div>`;
-  }).join('') : '<div class="text-gray-600 text-xs">No enriched CVEs yet.</div>';
+    return `<div class="flex items-center justify-between border-l-2 pl-3 py-1" style="border-color:${c}">
+      <div><a href="https://nvd.nist.gov/vuln/detail/${encodeURIComponent(a.cve_id)}" target="_blank" rel="noopener noreferrer" class="text-white lnk mono">${esc(a.cve_id)}</a>
+        <span class="text-[var(--faint)] text-xs ml-2">${badges}</span></div>
+      <div class="font-black mono" style="color:${c}">${Number(a.priority_score)||0}</div></div>`;
+  }).join('') : '<div class="text-[var(--faint)] text-xs">No enriched CVEs yet.</div>';
 
   // Reports
   const rp = await j('/api/latest-reports');
   document.getElementById('reports').innerHTML = rp.length ? rp.map(r=>
-    `<div class="border-b border-[#1a222e] pb-2">
+    `<div class="border-b border-[#141c2c] pb-2">
       <div class="text-white font-semibold">${esc(r.title)}</div>
-      <div class="text-gray-400 text-xs mt-1">${esc((r.summary||'').slice(0,300))}${(r.summary||'').length>300?'…':''}</div>
-    </div>`).join('') : '<div class="text-gray-600 text-xs">No reports yet — run <span class="text-gray-400">/report</span> in Discord.</div>';
+      <div class="text-[var(--muted)] text-xs mt-1">${esc((r.summary||'').slice(0,300))}${(r.summary||'').length>300?'…':''}</div>
+    </div>`).join('') : '<div class="text-[var(--faint)] text-xs">No reports yet — run <span class="text-[var(--muted)]">/report</span> in Discord.</div>';
 
   // News
   const nw = await j('/api/latest-news');
   document.getElementById('news').innerHTML = nw.length ? nw.slice(0,6).map(n=>
-    `<div class="truncate"><a href="${safeUrl(n.url)}" target="_blank" rel="noopener noreferrer" class="text-gray-300 hover:underline">${esc(n.title)}</a>
-      <span class="text-gray-600">· ${esc(n.source||'')}</span></div>`).join('') : '<div class="text-gray-600">No news yet.</div>';
+    `<div class="truncate"><a href="${safeUrl(n.url)}" target="_blank" rel="noopener noreferrer" class="text-[var(--muted)] lnk">${esc(n.title)}</a>
+      <span class="text-[var(--faint)]">· ${esc(n.source||'')}</span></div>`).join('') : '<div class="text-[var(--faint)]">No news yet.</div>';
 }
 
 refresh();

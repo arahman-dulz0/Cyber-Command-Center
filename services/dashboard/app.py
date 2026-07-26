@@ -102,3 +102,18 @@ async def api_top_skills() -> JSONResponse:
 @app.get("/api/latest-reports", dependencies=API_DEPS)
 async def api_latest_reports() -> JSONResponse:
     return JSONResponse(_clean(await dashboard.latest_reports()))
+
+
+@app.get("/api/security-score", dependencies=API_DEPS)
+async def api_security_score() -> JSONResponse:
+    return JSONResponse(_clean(await dashboard.security_score()))
+
+
+@app.get("/api/assets-summary", dependencies=API_DEPS)
+async def api_assets_summary() -> JSONResponse:
+    return JSONResponse(_clean(await dashboard.assets_summary()))
+
+
+@app.get("/api/activity-trend", dependencies=API_DEPS)
+async def api_activity_trend() -> JSONResponse:
+    return JSONResponse(_clean(await dashboard.activity_trend()))

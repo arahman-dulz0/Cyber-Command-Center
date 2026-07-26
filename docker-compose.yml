@@ -1,0 +1,107 @@
+# =============================================================================
+# Cyber Command Center — one-command, self-contained stack.
+#
+#   git clone … && cd Cyber-Command-Center
+#   docker compose up -d           # Postgres (seeded) + dashboard  → http://localhost:8080
+#
+# The light demo needs NO .env — sensible defaults are baked in below. On first
+# boot Postgres auto-loads the schema + a real-CVE demo dataset from
+# docker/demo/initdb, so the dashboard is fully populated immediately.
+#
+# Full platform (adds the Discord bot, Redis and a local Ollama):
+#   cp services/discord-bot/.env.example .env   # then set DISCORD_TOKEN
+#   docker compose --profile full up -d
+#   docker compose exec ollama ollama pull qwen2.5:3b
+#   docker compose exec ollama ollama pull nomic-embed-text
+#
+# NOTE: this is the portable/standalone path. The live-server deploy uses the
+# split files in docker/ (bot.yml + dashboard.yml + ops.yml) against external
+# infrastructure — those are unchanged.
+# =============================================================================
+
+name: cyber-command-center
+
+services:
+  postgres:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-cyber}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-CyberSecure2026}
+      POSTGRES_DB: ${POSTGRES_DB:-cyberdb}
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+      # Auto-runs *.sql alphabetically on FIRST init: 01_schema then 02_seed.
+      - ./docker/demo/initdb:/docker-entrypoint-initdb.d:ro
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-cyber} -d ${POSTGRES_DB:-cyberdb}"]
+      interval: 5s
+      timeout: 5s
+      retries: 12
+    restart: unless-stopped
+    networks: [ccc]
+
+  dashboard:
+    build: ./services/dashboard
+    environment:
+      POSTGRES_HOST: postgres
+      POSTGRES_PORT: "5432"
+      POSTGRES_USER: ${POSTGRES_USER:-cyber}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-CyberSecure2026}
+      POSTGRES_DB: ${POSTGRES_DB:-cyberdb}
+      HTB_PROGRESS_GOAL: ${HTB_PROGRESS_GOAL:-50}
+      # Auth unset → open mode (fine for a localhost demo). Set both to lock down.
+      DASHBOARD_USER: ${DASHBOARD_USER:-}
+      DASHBOARD_PASS: ${DASHBOARD_PASS:-}
+      DASHBOARD_API_KEY: ${DASHBOARD_API_KEY:-}
+    ports:
+      - "${DASHBOARD_PORT:-8080}:8080"
+    depends_on:
+      postgres:
+        condition: service_healthy
+    restart: unless-stopped
+    networks: [ccc]
+
+  # --- Full platform (opt-in): docker compose --profile full up -d ------------
+  redis:
+    image: redis:7-alpine
+    profiles: [full]
+    restart: unless-stopped
+    networks: [ccc]
+
+  ollama:
+    image: ollama/ollama:latest
+    profiles: [full]
+    volumes:
+      - ollama:/root/.ollama
+    ports:
+      - "${OLLAMA_PORT:-11434}:11434"
+    restart: unless-stopped
+    networks: [ccc]
+
+  discord-bot:
+    build: ./services/discord-bot
+    profiles: [full]
+    env_file:
+      - path: .env
+        required: false
+    environment:
+      POSTGRES_HOST: postgres
+      POSTGRES_PORT: "5432"
+      POSTGRES_USER: ${POSTGRES_USER:-cyber}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-CyberSecure2026}
+      POSTGRES_DB: ${POSTGRES_DB:-cyberdb}
+      REDIS_HOST: redis
+      OLLAMA_HOST: http://ollama:11434
+    depends_on:
+      postgres:
+        condition: service_healthy
+    restart: unless-stopped
+    networks: [ccc]
+
+volumes:
+  pgdata:
+  ollama:
+
+networks:
+  ccc:
+    driver: bridge

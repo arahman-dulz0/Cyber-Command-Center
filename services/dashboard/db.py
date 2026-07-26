@@ -190,5 +190,81 @@ class Dashboard:
         )
         return [{"skill": r["skill"], "count": r["n"]} for r in rows]
 
+    # --- Posture ---------------------------------------------------------
+    async def assets_summary(self) -> dict[str, Any]:
+        """Lab inventory posture: total vs. needs-patch (in an open ticket) vs. healthy."""
+        total = await self._val("SELECT COUNT(*) FROM lab_assets") or 0
+        needs_patch = await self._val(
+            """
+            SELECT COUNT(DISTINCT a)
+            FROM tickets, unnest(assets) a
+            WHERE status = 'open' AND a IN (SELECT name FROM lab_assets);
+            """
+        ) or 0
+        needs_patch = min(needs_patch, total)
+        return {"total": total, "needs_patch": needs_patch, "healthy": total - needs_patch}
+
+    async def security_score(self) -> dict[str, Any]:
+        """
+        Inverse-risk posture score (0–100, higher is safer), computed live — no stored
+        column. Reflects the operator's OWN exposure (unremediated lab risk), not the
+        global threat feed: the open-ticket backlog, how many of those are actively
+        exploited (KEV), and how many lab assets await a patch. A clean lab scores 100.
+        """
+        kev_open = await self._val(
+            "SELECT COUNT(*) FROM tickets t JOIN cve_enrichment e ON e.cve_id = t.cve_id "
+            "WHERE t.status = 'open' AND e.kev"
+        ) or 0
+        open_tickets = await self._val("SELECT COUNT(*) FROM tickets WHERE status='open'") or 0
+        needs_patch = (await self.assets_summary())["needs_patch"]
+
+        tick_pen = 3 * open_tickets
+        kev_pen = 2 * kev_open
+        patch_pen = 2 * needs_patch
+        score = max(0, min(100, 100 - tick_pen - kev_pen - patch_pen))
+
+        grade, color = self._grade(score)
+        factors = [
+            {"label": "Open remediation tickets", "delta": -tick_pen},
+            {"label": "Actively exploited (KEV) in lab", "delta": -kev_pen},
+            {"label": "Assets awaiting patch", "delta": -patch_pen},
+        ]
+        return {"score": score, "grade": grade, "color": color,
+                "factors": [f for f in factors if f["delta"] != 0]}
+
+    @staticmethod
+    def _grade(score: int) -> tuple[str, str]:
+        if score >= 90:
+            return "A", "#34C759"
+        if score >= 80:
+            return "B", "#9be34e"
+        if score >= 70:
+            return "C", "#FFCC00"
+        if score >= 60:
+            return "D", "#FF9500"
+        return "F", "#FF3B30"
+
+    async def activity_trend(self, days: int = 7) -> list[dict[str, Any]]:
+        """Per-day new CVEs and KEV additions over the window (for the trend chart)."""
+        rows = await self.pool.fetch(
+            """
+            SELECT to_char(d::date, 'Mon DD') AS day,
+                   COALESCE(c.n, 0) AS cves,
+                   COALESCE(k.n, 0) AS kev
+            FROM generate_series(NOW() - ($1::text || ' days')::interval, NOW(), INTERVAL '1 day') d
+            LEFT JOIN (
+                SELECT date_trunc('day', created_at) AS day, COUNT(*) n
+                FROM cves GROUP BY 1
+            ) c ON c.day = date_trunc('day', d)
+            LEFT JOIN (
+                SELECT date_trunc('day', enriched_at) AS day, COUNT(*) n
+                FROM cve_enrichment WHERE kev GROUP BY 1
+            ) k ON k.day = date_trunc('day', d)
+            ORDER BY d;
+            """,
+            str(days),
+        )
+        return [{"day": r["day"], "cves": r["cves"], "kev": r["kev"]} for r in rows]
+
 
 dashboard = Dashboard()
