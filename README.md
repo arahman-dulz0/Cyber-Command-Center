@@ -138,3 +138,16 @@ engine. See **[docs/phase3.md](docs/phase3.md)**.
 - **Phase 8** — automation & actioning: lab inventory match → auto-ticket + AI remediation checklist → `#announcements` escalation (+ optional email) ✅
 
 **All 8 phases complete** — a self-hosted, AI-powered cybersecurity operations platform: autonomous threat-intel collection & fusion, a personal RAG brain, a multi-agent report crew, a SOC dashboard, and closed-loop actioning.
+
+## Documentation
+
+| Guide | What's inside |
+|---|---|
+| **[api.md](docs/api.md)** | All 22 slash commands + the dashboard HTTP API. |
+| **[developer-guide.md](docs/developer-guide.md)** | Repo layout, the repository pattern, local dev, deploying. |
+| **[plugins.md](docs/plugins.md)** | Add a monitor, an enrichment source, or an analyst tool. |
+| **[operations.md](docs/operations.md)** | Health, backups, monitoring, cron, safe updates. |
+| **[security.md](docs/security.md)** | Auth, rate limiting, headers, hardening, going public. |
+| **[troubleshooting.md](docs/troubleshooting.md)** | Symptom → cause → fix. |
+| **[faq.md](docs/faq.md)** | Common questions. |
+| **Phase guides** | [1](docs/phase1.md) · [2](docs/phase2.md) · [3](docs/phase3.md) · [4](docs/phase4.md) · [5](docs/phase5.md) · [6](docs/phase6.md) · [7](docs/phase7.md) · [8](docs/phase8.md) — per-phase deep dives. |
