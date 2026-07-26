@@ -15,6 +15,11 @@ import {
   Boxes,
   BarChart3,
   Sparkles,
+  Newspaper,
+  Activity,
+  Database,
+  ShieldCheck,
+  Code2,
   type LucideIcon,
 } from "lucide-react";
 
@@ -35,4 +40,9 @@ export const ICONS: Record<string, LucideIcon> = {
   Boxes,
   BarChart3,
   Sparkles,
+  Newspaper,
+  Activity,
+  Database,
+  ShieldCheck,
+  Code2,
 };

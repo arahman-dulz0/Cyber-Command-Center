@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { AnimatePresence, motion } from "motion/react";
-import { Check, Plus, ArrowUpRight } from "lucide-react";
+import { Check, Plus, ArrowUpRight, Clock } from "lucide-react";
 import { PHASES, NEXT } from "@/lib/data";
 import { cn } from "@/lib/utils";
 import { Section } from "./section";
@@ -15,8 +15,8 @@ export function Roadmap() {
     <Section
       id="roadmap"
       eyebrow="Roadmap"
-      title="Nine milestones, all shipped."
-      intro="The platform was built in sequence — each milestone a working stage that the next one builds on. Every stage below is complete and running."
+      title="Ten milestones, and counting."
+      intro="The platform was built in sequence — each milestone a working stage the next one builds on. Nine are shipped and running today; the tenth is in progress."
     >
       <div className="relative">
         <div className="absolute bottom-6 left-[27px] top-6 w-px bg-line md:left-[31px]" aria-hidden />
@@ -36,7 +36,12 @@ export function Roadmap() {
                   aria-expanded={isOpen}
                 >
                   <span className="relative z-10 flex h-14 w-14 shrink-0 items-center justify-center rounded-xl border border-line bg-bg ring-4 ring-bg">
-                    <span className="mono text-sm font-semibold text-cyan">
+                    <span
+                      className={cn(
+                        "mono text-sm font-semibold",
+                        p.status === "shipped" ? "text-cyan" : "text-amber"
+                      )}
+                    >
                       {String(p.n).padStart(2, "0")}
                     </span>
                   </span>
@@ -45,9 +50,15 @@ export function Roadmap() {
                       <h3 className="truncate font-display text-lg font-semibold tracking-tight text-ink">
                         {p.title}
                       </h3>
-                      <span className="mono hidden items-center gap-1 rounded-md border border-green/30 px-1.5 py-0.5 text-[10px] text-green sm:inline-flex">
-                        <Check className="h-3 w-3" /> shipped
-                      </span>
+                      {p.status === "shipped" ? (
+                        <span className="mono hidden items-center gap-1 rounded-md border border-green/30 px-1.5 py-0.5 text-[10px] text-green sm:inline-flex">
+                          <Check className="h-3 w-3" /> shipped
+                        </span>
+                      ) : (
+                        <span className="mono hidden items-center gap-1 rounded-md border border-amber/30 px-1.5 py-0.5 text-[10px] text-amber sm:inline-flex">
+                          <Clock className="h-3 w-3" /> in progress
+                        </span>
+                      )}
                     </div>
                   </div>
                   <Plus

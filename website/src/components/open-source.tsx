@@ -7,8 +7,13 @@ import {
   Ban,
   Cpu,
   GitFork,
+  Star,
+  CircleDot,
+  GitPullRequest,
 } from "lucide-react";
 import { Reveal } from "./reveal";
+import { GithubIcon } from "./github-icon";
+import { SITE } from "@/lib/data";
 
 const PRINCIPLES = [
   { icon: Scale, title: "MIT licensed", body: "Permissive. Fork it, ship it, sell your services on top." },
@@ -48,6 +53,29 @@ export function OpenSource() {
               <p className="mt-1.5 text-sm leading-relaxed text-muted">{p.body}</p>
             </div>
           ))}
+        </div>
+
+        {/* GitHub band */}
+        <div className="flex flex-col items-center justify-between gap-5 border-t border-line px-8 py-8 md:flex-row md:px-12">
+          <div className="flex flex-wrap items-center justify-center gap-6 text-sm text-muted">
+            <span className="flex items-center gap-2">
+              <Star className="h-4 w-4 text-cyan" /> Star the project
+            </span>
+            <span className="flex items-center gap-2">
+              <CircleDot className="h-4 w-4 text-cyan" /> Open an issue
+            </span>
+            <span className="flex items-center gap-2">
+              <GitPullRequest className="h-4 w-4 text-cyan" /> Send a PR
+            </span>
+          </div>
+          <a
+            href={SITE.repo}
+            target="_blank"
+            rel="noreferrer"
+            className="flex shrink-0 items-center gap-2 rounded-xl bg-ink px-5 py-3 text-sm font-medium text-bg transition-opacity hover:opacity-90"
+          >
+            <GithubIcon className="h-4 w-4" /> Contribute on GitHub
+          </a>
         </div>
       </div>
     </section>

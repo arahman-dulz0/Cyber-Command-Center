@@ -4,122 +4,133 @@
 export type Module = {
   name: string;
   icon: string;
-  tag: string;
+  category: "Intelligence" | "AI" | "Operations" | "Platform";
   blurb: string;
 };
 
+export const FEATURE_CATEGORIES = [
+  "Intelligence",
+  "AI",
+  "Operations",
+  "Platform",
+] as const;
+
 export const MODULES: Module[] = [
+  // --- Intelligence ---
   {
-    name: "AI Security Analyst",
-    icon: "Sparkles",
-    tag: "decide",
+    name: "Threat Intelligence Fusion",
+    icon: "GitMerge",
+    category: "Intelligence",
     blurb:
-      "One natural-language command answers from your own data first — assets, CVEs, KEV, tickets, knowledge base — and uses the local LLM only as the last step.",
-  },
-  {
-    name: "Threat Intelligence",
-    icon: "Radar",
-    tag: "collect",
-    blurb:
-      "Pulls CVEs, advisories and alerts from NVD, CISA and vendor feeds on a schedule — no manual checking.",
+      "Correlates every CVE across EPSS probability, CISA KEV, ExploitDB and GitHub PoCs into a single 0–100 exploitability-weighted priority score.",
   },
   {
     name: "Autonomous CVE Monitoring",
     icon: "ShieldAlert",
-    tag: "collect",
+    category: "Intelligence",
     blurb:
-      "Watches NVD by published date and CVSS severity every hour, de-duplicates, and stores what's new.",
+      "Hourly NVD sweeps by published date and CVSS severity, de-duplicated and enriched — the moment a threat lands, it's scored and triaged.",
   },
   {
-    name: "Threat Intelligence Fusion",
-    icon: "GitMerge",
-    tag: "correlate",
+    name: "Cyber News Intelligence",
+    icon: "Newspaper",
+    category: "Intelligence",
     blurb:
-      "Correlates each CVE with EPSS probability, CISA KEV, ExploitDB and GitHub PoCs into a 0–100 priority score.",
-  },
-  {
-    name: "Learning Intelligence",
-    icon: "GraduationCap",
-    tag: "learn",
-    blurb:
-      "Imports your HackTheBox progress and practice log, then recommends the box that targets your weakest area.",
-  },
-  {
-    name: "Knowledge Base (RAG)",
-    icon: "BookOpen",
-    tag: "knowledge",
-    blurb:
-      "Embeds your notes, write-ups and PDFs locally so answers cite your own material, not the open internet.",
-  },
-  {
-    name: "AI Assistant",
-    icon: "Bot",
-    tag: "ai",
-    blurb:
-      "Grounded question answering over the knowledge base using local Ollama models — private by default.",
-  },
-  {
-    name: "Multi-Agent Crew",
-    icon: "Users",
-    tag: "ai",
-    blurb:
-      "A Planner, Researcher, CVE Analyst, Learning Coach and Writer hand off in sequence to produce one report.",
-  },
-  {
-    name: "SOC Dashboard",
-    icon: "LayoutDashboard",
-    tag: "operate",
-    blurb:
-      "A read-only operations view: threat level, priority distribution, timelines and open action tickets.",
-  },
-  {
-    name: "Automation Engine",
-    icon: "Workflow",
-    tag: "automate",
-    blurb:
-      "Background monitors run continuously inside the bot process — no cron, no external scheduler, no extra services.",
-  },
-  {
-    name: "Closed-loop Actioning",
-    icon: "Zap",
-    tag: "automate",
-    blurb:
-      "When a high-priority CVE matches your stack, it raises a ticket, drafts remediation steps and escalates.",
-  },
-  {
-    name: "Ticketing",
-    icon: "Ticket",
-    tag: "operate",
-    blurb:
-      "Auto-raised remediation tickets, deduplicated per CVE, that you triage and close from chat.",
-  },
-  {
-    name: "Reporting",
-    icon: "FileText",
-    tag: "ai",
-    blurb:
-      "Scheduled and on-demand intelligence reports synthesized by the agent crew and archived for review.",
-  },
-  {
-    name: "Discord Operations",
-    icon: "MessageSquare",
-    tag: "operate",
-    blurb:
-      "20+ slash commands turn a Discord server into the control surface for the whole platform.",
+      "Multi-source news collection from leading security outlets and CISA advisories, summarized by a local model and delivered to your team.",
   },
   {
     name: "Asset Inventory",
     icon: "Boxes",
-    tag: "operate",
+    category: "Intelligence",
     blurb:
-      "Declare the technologies in your lab so intelligence is matched to what you actually run.",
+      "Declare your stack once; every alert, ticket and answer is automatically correlated to the technologies you actually run.",
+  },
+  // --- AI ---
+  {
+    name: "AI Security Analyst",
+    icon: "Sparkles",
+    category: "AI",
+    blurb:
+      "Ask anything in plain English. It searches your own data first — assets, CVEs, KEV, tickets, knowledge base — and reaches for the LLM only as the last step, so it never guesses.",
   },
   {
-    name: "Analytics",
-    icon: "BarChart3",
-    tag: "operate",
+    name: "Multi-Agent AI Crew",
+    icon: "Users",
+    category: "AI",
     blurb:
-      "Command usage, AI response times, KEV counts and exploitability trends, tracked in PostgreSQL.",
+      "A Planner, Researcher, CVE Analyst, Coach and Writer hand off in sequence to synthesize board-ready intelligence reports on demand.",
+  },
+  {
+    name: "Knowledge Base (RAG)",
+    icon: "BookOpen",
+    category: "AI",
+    blurb:
+      "Embeds your notes, write-ups and PDFs locally so answers cite your own material — grounded retrieval, private by default, powered by Ollama.",
+  },
+  {
+    name: "Executive Reports",
+    icon: "FileText",
+    category: "AI",
+    blurb:
+      "Scheduled and on-demand reports: executive summary, threat level, risk score, affected assets and prioritized remediation — archived for review.",
+  },
+  // --- Operations ---
+  {
+    name: "SOC Dashboard",
+    icon: "LayoutDashboard",
+    category: "Operations",
+    blurb:
+      "A live operations view: security score, threat level, severity mix, activity trends, fused alerts and open tickets — read-only over your database.",
+  },
+  {
+    name: "Discord Operations",
+    icon: "MessageSquare",
+    category: "Operations",
+    blurb:
+      "Twenty-two slash commands turn a Discord workspace into the control surface for the entire platform — chat is the SOC.",
+  },
+  {
+    name: "Ticketing",
+    icon: "Ticket",
+    category: "Operations",
+    blurb:
+      "Remediation tickets auto-raised when a high-priority CVE hits your stack, deduplicated per CVE, with an AI-drafted checklist — triage and close from chat.",
+  },
+  {
+    name: "Automation Engine",
+    icon: "Workflow",
+    category: "Operations",
+    blurb:
+      "Closed-loop actioning: match → ticket → escalate. Background monitors run inside the process — no cron, no scheduler, no extra services.",
+  },
+  // --- Platform ---
+  {
+    name: "Health Monitoring",
+    icon: "Activity",
+    category: "Platform",
+    blurb:
+      "Heartbeat healthchecks, auto-heal and uptime monitoring keep every service running — the platform recovers from failure on its own.",
+  },
+  {
+    name: "Backups",
+    icon: "Database",
+    category: "Platform",
+    blurb:
+      "Automated, retained database and knowledge-base backups with one-command restore — your intelligence is never a single disk away from gone.",
+  },
+  {
+    name: "Security Hardening",
+    icon: "ShieldCheck",
+    category: "Platform",
+    blurb:
+      "Authentication, API keys, rate limiting, strict security headers, audit logging and locked-down containers — built for exposure, not just a lab.",
+  },
+  {
+    name: "Open Source",
+    icon: "Code2",
+    category: "Platform",
+    blurb:
+      "MIT-licensed, Docker-ready and fully self-hosted. Read every line, run it on your own hardware, and extend it with a single-file plugin.",
   },
 ];
 
@@ -134,17 +145,18 @@ export const SOURCES: Source[] = [
   { name: "YouTube", note: "learning feeds" },
 ];
 
-export type Phase = { n: number; title: string; body: string };
+export type Phase = { n: number; title: string; body: string; status: "shipped" | "planned" };
 export const PHASES: Phase[] = [
-  { n: 1, title: "Foundation", body: "Async Discord bot, PostgreSQL and Redis, structured logging, on-demand CVE and news lookups." },
-  { n: 2, title: "Threat Intelligence", body: "Autonomous hourly CVE monitoring and multi-source news collection with de-duplication." },
-  { n: 3, title: "Intelligence Fusion", body: "EPSS + KEV + ExploitDB + GitHub PoC correlation into a single prioritized alert." },
-  { n: 4, title: "Learning Intelligence", body: "HackTheBox import, a practice journal, and AI recommendations that fill skill gaps." },
-  { n: 5, title: "RAG Knowledge Base", body: "Local embeddings over your own documents so the assistant answers from your material." },
-  { n: 6, title: "SOC Dashboard", body: "A self-hosted operations dashboard reading live from the same database." },
-  { n: 7, title: "Multi-Agent Crew", body: "Specialised agents that hand off to synthesize intelligence reports." },
-  { n: 8, title: "Automation & Actioning", body: "Lab-aware matching that raises tickets and escalates the CVEs that affect you." },
-  { n: 9, title: "AI Security Analyst", body: "A single natural-language interface over the whole platform: classify intent, plan multi-step tool calls, search your own data first, and answer with rich embeds — the LLM is the last resort, never the first." },
+  { n: 1, title: "Foundation", status: "shipped", body: "Async Discord bot, PostgreSQL and Redis, structured logging, on-demand CVE and news lookups." },
+  { n: 2, title: "Threat Intelligence", status: "shipped", body: "Autonomous hourly CVE monitoring and multi-source news collection with de-duplication." },
+  { n: 3, title: "Intelligence Fusion", status: "shipped", body: "EPSS + KEV + ExploitDB + GitHub PoC correlation into a single prioritized alert." },
+  { n: 4, title: "Learning Intelligence", status: "shipped", body: "HackTheBox import, a practice journal, and AI recommendations that fill skill gaps." },
+  { n: 5, title: "RAG Knowledge Base", status: "shipped", body: "Local embeddings over your own documents so the assistant answers from your material." },
+  { n: 6, title: "SOC Dashboard", status: "shipped", body: "A self-hosted operations dashboard reading live from the same database." },
+  { n: 7, title: "Multi-Agent Crew", status: "shipped", body: "Specialised agents that hand off to synthesize intelligence reports." },
+  { n: 8, title: "Automation & Actioning", status: "shipped", body: "Lab-aware matching that raises tickets and escalates the CVEs that affect you." },
+  { n: 9, title: "AI Security Analyst", status: "shipped", body: "A single natural-language interface over the whole platform: classify intent, plan multi-step tool calls, search your own data first, and answer with rich embeds — the LLM is the last resort, never the first." },
+  { n: 10, title: "Hosted Demo & Integrations", status: "planned", body: "A public, read-only hosted demo, plus Slack and Microsoft Teams delivery alongside Discord — so anyone can explore the platform, and any team can adopt it." },
 ];
 
 export type TechGroup = { group: string; items: string[] };
@@ -174,14 +186,13 @@ export type ArchNode = {
   desc: string;
 };
 export const ARCH: ArchNode[] = [
-  { id: "sources", label: "Threat Sources", kind: "source", desc: "NVD, CISA KEV, EPSS, ExploitDB, GitHub advisories, RSS and YouTube — polled on independent schedules." },
-  { id: "collectors", label: "Collectors", kind: "source", desc: "Background monitors fetch, normalize and de-duplicate each source, storing only what's new." },
-  { id: "engine", label: "Intelligence Engine", kind: "core", desc: "Fuses signals per CVE and computes a 0–100 priority from CVSS, EPSS, KEV and exploit availability." },
-  { id: "ai", label: "AI Layer", kind: "core", desc: "Local Ollama models summarize, assess risk, embed documents and drive the multi-agent report crew." },
-  { id: "data", label: "PostgreSQL + Redis", kind: "store", desc: "All intelligence, embeddings, metrics and tickets persist in Postgres; Redis handles fast state." },
-  { id: "rag", label: "Knowledge Base", kind: "store", desc: "Vector search over your own notes and write-ups, grounding assistant answers in your material." },
-  { id: "automation", label: "Automation Engine", kind: "core", desc: "Matches priority CVEs against your asset inventory and takes action without waiting for you." },
-  { id: "outputs", label: "Discord · Dashboard · API", kind: "output", desc: "Delivered where you work: chat commands, a live SOC dashboard, and programmatic access." },
+  { id: "sources", label: "Threat Sources", kind: "source", desc: "NVD, CISA KEV, EPSS, ExploitDB, GitHub advisories and security news — the world's public threat intelligence, polled on independent schedules." },
+  { id: "collectors", label: "Collectors", kind: "source", desc: "Autonomous background monitors fetch, normalize and de-duplicate every source in-process — storing only what's genuinely new. No cron, no scheduler." },
+  { id: "fusion", label: "Threat Intelligence Fusion", kind: "core", desc: "The core differentiator: each CVE is correlated across EPSS, CISA KEV, ExploitDB and GitHub PoCs into a single exploitability-weighted 0–100 priority score." },
+  { id: "data", label: "PostgreSQL + Redis", kind: "store", desc: "All intelligence, enrichment, embeddings, tickets and metrics persist in PostgreSQL; Redis handles fast ephemeral state. Everything on your own infrastructure." },
+  { id: "analyst", label: "AI Security Analyst", kind: "core", desc: "Local Ollama models power a natural-language analyst that classifies intent, plans multi-step tool calls, and answers from your own data first — the LLM is the last step, never the first." },
+  { id: "surfaces", label: "Discord · Dashboard · Knowledge Base · Automation", kind: "output", desc: "Delivered where you work: a chat control surface, a live SOC dashboard, RAG over your own notes, and closed-loop automation that raises tickets and escalates." },
+  { id: "team", label: "Security Team", kind: "output", desc: "Your team receives prioritized, correlated, already-actioned intelligence — not a firehose of raw alerts. Decisions in seconds, not hours." },
 ];
 
 // --- Single source of truth for outbound links ------------------------------
@@ -238,11 +249,12 @@ export const DOC_LINKS: DocLink[] = [
   { title: "Automation", body: "Asset matching, tickets and escalation.", path: "phase8.md" },
   { title: "Plugins", body: "Add a monitor, enrichment source, or analyst tool.", path: "plugins.md" },
   { title: "Troubleshooting & FAQ", body: "Symptom → cause → fix, and common questions.", path: "troubleshooting.md" },
+  { title: "Contributing", body: "Open an issue, send a PR, or write a plugin.", path: "contributing.md" },
 ];
 
 // --- What's next (roadmap forward-look) -------------------------------------
 export const NEXT: { title: string; body: string }[] = [
-  { title: "Public demo", body: "A hosted, read-only dashboard so anyone can explore without installing." },
-  { title: "Plugin marketplace", body: "Drop-in monitors and enrichment sources contributed by the community." },
-  { title: "More integrations", body: "Slack and Microsoft Teams delivery alongside Discord." },
+  { title: "Plugin marketplace", body: "Drop-in monitors, enrichment sources and analyst tools contributed by the community." },
+  { title: "Managed cloud option", body: "An optional hosted deployment for teams that want the platform without running the infrastructure." },
+  { title: "Community detections", body: "Shared detection and correlation rules, versioned and installable in one command." },
 ];

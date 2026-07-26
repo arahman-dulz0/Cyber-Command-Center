@@ -7,7 +7,12 @@ import path from "node:path";
 import { marked } from "marked";
 import { SITE } from "./data";
 
-const DOCS_DIR = path.join(process.cwd(), "..", "docs");
+// Docs are vendored into the website by scripts/sync-docs.mjs (prebuild hook) so
+// the site is self-contained for Vercel. Falls back to the repo ../docs in dev.
+const VENDORED = path.join(process.cwd(), "content", "docs");
+const DOCS_DIR = fs.existsSync(VENDORED)
+  ? VENDORED
+  : path.join(process.cwd(), "..", "docs");
 
 // Curated order + friendly titles for the docs index.
 export const DOC_ORDER: { slug: string; title: string; group: string }[] = [
@@ -19,6 +24,7 @@ export const DOC_ORDER: { slug: string; title: string; group: string }[] = [
   { slug: "security", title: "Security", group: "Guides" },
   { slug: "troubleshooting", title: "Troubleshooting", group: "Guides" },
   { slug: "faq", title: "FAQ", group: "Guides" },
+  { slug: "contributing", title: "Contributing", group: "Guides" },
   { slug: "phase1", title: "1 · Foundation", group: "Phase deep-dives" },
   { slug: "phase2", title: "2 · Threat Intelligence", group: "Phase deep-dives" },
   { slug: "phase3", title: "3 · Intelligence Fusion", group: "Phase deep-dives" },

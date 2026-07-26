@@ -21,8 +21,20 @@ export function PageShell({ children }: { children: ReactNode }) {
             <Link href="/docs" className="text-muted transition-colors hover:text-ink">
               Docs
             </Link>
+            <Link
+              href="/api-reference"
+              className="hidden text-muted transition-colors hover:text-ink sm:inline"
+            >
+              API
+            </Link>
             <Link href="/blog" className="text-muted transition-colors hover:text-ink">
               Blog
+            </Link>
+            <Link
+              href="/demo"
+              className="hidden text-muted transition-colors hover:text-ink sm:inline"
+            >
+              Demo
             </Link>
             <a
               href={SITE.repo}

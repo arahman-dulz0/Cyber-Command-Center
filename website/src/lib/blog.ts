@@ -62,6 +62,26 @@ No API keys, no model download, no configuration. That was the whole point.
   },
 ];
 
+// Planned posts — shown as clearly-labeled "coming soon" cards (not published).
+export const UPCOMING: { title: string; excerpt: string }[] = [
+  {
+    title: "Building an AI SOC",
+    excerpt: "The architecture behind an autonomous security operations center that runs on a single server.",
+  },
+  {
+    title: "Inside Threat Intelligence Fusion",
+    excerpt: "How EPSS, CISA KEV, ExploitDB and GitHub PoCs combine into one exploitability-weighted priority score.",
+  },
+  {
+    title: "Why Self-Hosted Security Matters",
+    excerpt: "Data sovereignty, local AI, and the case for running your security stack on infrastructure you control.",
+  },
+  {
+    title: "Introducing the AI Security Analyst",
+    excerpt: "Natural-language security operations that search your own data first — and reach for the LLM last.",
+  },
+];
+
 export function postSlugs(): string[] {
   return POSTS.map((p) => p.slug);
 }

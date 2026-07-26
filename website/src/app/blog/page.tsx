@@ -2,7 +2,7 @@ import Link from "next/link";
 import type { Metadata } from "next";
 import { ArrowRight } from "lucide-react";
 import { PageShell } from "@/components/page-shell";
-import { POSTS } from "@/lib/blog";
+import { POSTS, UPCOMING } from "@/lib/blog";
 
 export const metadata: Metadata = {
   title: "Blog — Cyber Command Center",
@@ -45,6 +45,25 @@ export default function BlogIndex() {
               {p.excerpt}
             </p>
           </Link>
+        ))}
+      </div>
+
+      {/* Upcoming */}
+      <h2 className="mt-16 mb-4 font-display text-sm font-semibold uppercase tracking-widest text-faint">
+        Coming soon
+      </h2>
+      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+        {UPCOMING.map((p) => (
+          <div
+            key={p.title}
+            className="rounded-2xl border border-dashed border-line bg-panel/20 p-6"
+          >
+            <div className="mono mb-2 inline-block rounded-md border border-line px-2 py-0.5 text-[10px] uppercase tracking-wider text-faint">
+              Draft
+            </div>
+            <h3 className="font-display text-lg font-semibold text-ink">{p.title}</h3>
+            <p className="mt-2 text-sm leading-relaxed text-muted">{p.excerpt}</p>
+          </div>
         ))}
       </div>
     </PageShell>

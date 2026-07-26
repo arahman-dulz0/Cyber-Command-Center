@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { Menu, X } from "lucide-react";
 import { cn } from "@/lib/utils";
+import Link from "next/link";
 import { Logo } from "./logo";
 import { GithubIcon } from "./github-icon";
 import { SITE } from "@/lib/data";
@@ -69,12 +70,12 @@ export function Nav() {
             <GithubIcon className="h-4 w-4" />
             Star
           </a>
-          <a
-            href="#demo"
+          <Link
+            href="/demo"
             className="rounded-lg bg-ink px-4 py-2 text-sm font-medium text-bg transition-opacity hover:opacity-90"
           >
-            Live Demo
-          </a>
+            Launch Demo
+          </Link>
         </div>
 
         <button

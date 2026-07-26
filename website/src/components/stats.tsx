@@ -16,8 +16,8 @@ function CountUp({ value }: { value: string }) {
   useEffect(() => {
     if (!inView || !isNumeric) return;
     if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
-      setN(target);
-      return;
+      const id = requestAnimationFrame(() => setN(target));
+      return () => cancelAnimationFrame(id);
     }
     let raf = 0;
     const start = performance.now();

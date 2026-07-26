@@ -42,8 +42,22 @@ export default async function BlogPost({
   if (!post) notFound();
   const html = renderPost(post.body);
 
+  const jsonLd = {
+    "@context": "https://schema.org",
+    "@type": "BlogPosting",
+    headline: post.title,
+    description: post.excerpt,
+    datePublished: post.date,
+    author: { "@type": "Organization", name: "Cyber Command Center OSS" },
+    publisher: { "@type": "Organization", name: "Cyber Command Center OSS" },
+  };
+
   return (
     <PageShell>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+      />
       <Link
         href="/blog"
         className="mb-6 inline-block text-xs uppercase tracking-widest text-faint transition-colors hover:text-cyan"

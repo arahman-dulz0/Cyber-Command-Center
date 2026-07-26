@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { Logo } from "./logo";
 import { GithubIcon } from "./github-icon";
 import { SITE } from "@/lib/data";
@@ -8,28 +9,28 @@ const COLUMNS = [
   {
     title: "Platform",
     links: [
-      ["Modules", "#platform"],
-      ["Architecture", "#architecture"],
-      ["Roadmap", "#roadmap"],
-      ["Stack", "#stack"],
+      ["Features", "/#platform"],
+      ["Architecture", "/#architecture"],
+      ["Roadmap", "/#roadmap"],
+      ["Stack", "/#stack"],
     ],
   },
   {
     title: "Resources",
     links: [
-      ["Documentation", "#docs"],
-      ["Demo", "#demo"],
-      ["Open Source", "#open-source"],
-      ["GitHub", REPO],
+      ["Documentation", "/docs"],
+      ["API Reference", "/api-reference"],
+      ["Blog", "/blog"],
+      ["Launch Demo", "/demo"],
     ],
   },
   {
     title: "Project",
     links: [
-      ["Why it exists", "#why"],
-      ["Contributing", REPO],
-      ["License (MIT)", REPO],
-      ["Changelog", REPO],
+      ["Getting Started", "/docs/getting-started"],
+      ["Contributing", `${REPO}/blob/main/CONTRIBUTING.md`],
+      ["License (MIT)", `${REPO}/blob/main/LICENSE`],
+      ["GitHub", REPO],
     ],
   },
 ];
@@ -40,7 +41,7 @@ export function Footer() {
       <div className="mx-auto max-w-7xl px-6 py-16">
         <div className="grid grid-cols-2 gap-10 md:grid-cols-[1.5fr_repeat(3,1fr)]">
           <div className="col-span-2 md:col-span-1">
-            <a href="#top" className="flex items-center gap-2.5">
+            <Link href="/" className="flex items-center gap-2.5">
               <Logo className="h-7 w-7" />
               <span className="font-display text-sm font-semibold tracking-tight">
                 Cyber Command Center
@@ -48,7 +49,7 @@ export function Footer() {
               <span className="mono rounded-md border border-line bg-panel px-1.5 py-0.5 text-[10px] text-cyan">
                 OSS
               </span>
-            </a>
+            </Link>
             <p className="mt-4 max-w-xs text-sm leading-relaxed text-muted">
               An open-source, self-hosted AI security operations platform. Monitor,
               learn, automate and respond — from one place.

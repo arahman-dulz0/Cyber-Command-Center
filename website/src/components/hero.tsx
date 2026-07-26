@@ -1,14 +1,13 @@
 "use client";
 
+import Link from "next/link";
 import { motion } from "motion/react";
-import { ArrowRight, Play } from "lucide-react";
+import { ArrowRight, BookText, Play } from "lucide-react";
 import { SOURCES, SITE } from "@/lib/data";
 import { NetworkCanvas } from "./network-canvas";
-import { ConsoleCard } from "./console-card";
 import { GithubIcon } from "./github-icon";
 
 const REPO = SITE.repo;
-
 const ease = [0.22, 1, 0.36, 1] as const;
 
 export function Hero() {
@@ -17,12 +16,12 @@ export function Hero() {
       {/* ambient background */}
       <div className="pointer-events-none absolute inset-0">
         <NetworkCanvas />
-        <div className="absolute inset-0 bg-[radial-gradient(ellipse_60%_50%_at_30%_30%,rgba(76,130,251,0.12),transparent_70%)]" />
-        <div className="absolute inset-0 bg-gradient-to-r from-bg via-bg/70 to-transparent" />
-        <div className="absolute inset-x-0 bottom-0 h-40 bg-gradient-to-t from-bg to-transparent" />
+        <div className="absolute inset-0 bg-[radial-gradient(ellipse_60%_50%_at_25%_20%,rgba(76,130,251,0.14),transparent_70%)]" />
+        <div className="absolute inset-0 bg-[radial-gradient(ellipse_50%_60%_at_90%_10%,rgba(155,108,255,0.10),transparent_70%)]" />
+        <div className="absolute inset-0 bg-gradient-to-b from-transparent via-bg/40 to-bg" />
       </div>
 
-      <div className="relative mx-auto grid max-w-7xl grid-cols-1 items-center gap-12 px-6 pb-24 pt-20 md:pb-32 md:pt-28 lg:grid-cols-[1.1fr_0.9fr]">
+      <div className="relative mx-auto grid max-w-7xl grid-cols-1 items-center gap-12 px-6 pb-24 pt-20 md:pb-32 md:pt-28 lg:grid-cols-[1.05fr_0.95fr]">
         <div>
           <motion.div
             initial={{ opacity: 0, y: 12 }}
@@ -40,12 +39,11 @@ export function Hero() {
             initial={{ opacity: 0, y: 16 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.7, ease, delay: 0.05 }}
-            className="font-display text-5xl font-semibold leading-[1.02] tracking-tight text-balance md:text-7xl"
+            className="font-display text-[2.75rem] font-semibold leading-[1.03] tracking-tight text-balance sm:text-6xl md:text-7xl"
           >
-            The security operations
+            Autonomous threat intelligence.
             <br />
-            platform that{" "}
-            <span className="gradient-text">runs itself</span>.
+            Self-hosted <span className="gradient-text">cyber operations</span>.
           </motion.h1>
 
           <motion.p
@@ -54,10 +52,10 @@ export function Hero() {
             transition={{ duration: 0.7, ease, delay: 0.12 }}
             className="mt-6 max-w-xl text-lg leading-relaxed text-muted"
           >
-            One platform to monitor threats, correlate intelligence, learn, and
-            respond. Cyber Command Center OSS collects CVEs, fuses them with EPSS,
-            CISA KEV, ExploitDB and GitHub PoCs, and acts — continuously, on your
-            own infrastructure.
+            Cyber Command Center fuses global threat intelligence, correlates it to
+            your stack, and acts on it — an AI Security Analyst, a multi-agent report
+            crew, and closed-loop remediation, running continuously on your own
+            infrastructure. No cloud, no vendor lock-in.
           </motion.p>
 
           <motion.div
@@ -66,13 +64,16 @@ export function Hero() {
             transition={{ duration: 0.7, ease, delay: 0.19 }}
             className="mt-8 flex flex-wrap items-center gap-3"
           >
-            <a
-              href="#demo"
+            <Link
+              href="/demo"
               className="group flex items-center gap-2 rounded-xl bg-ink px-5 py-3 text-sm font-medium text-bg transition-opacity hover:opacity-90"
             >
               <Play className="h-4 w-4 fill-bg" />
-              Watch the demo
-            </a>
+              Launch Demo
+              <span className="mono rounded-md bg-bg/15 px-1.5 py-0.5 text-[9px] uppercase tracking-wider">
+                soon
+              </span>
+            </Link>
             <a
               href={REPO}
               target="_blank"
@@ -80,13 +81,20 @@ export function Hero() {
               className="flex items-center gap-2 rounded-xl border border-line bg-panel/60 px-5 py-3 text-sm font-medium transition-colors hover:border-blue/40 hover:bg-panel"
             >
               <GithubIcon className="h-4 w-4" />
-              View on GitHub
+              View GitHub
             </a>
+            <Link
+              href="/docs"
+              className="flex items-center gap-1.5 px-2 py-3 text-sm text-muted transition-colors hover:text-ink"
+            >
+              <BookText className="h-4 w-4" />
+              Documentation
+            </Link>
             <a
               href="#architecture"
               className="group flex items-center gap-1.5 px-2 py-3 text-sm text-muted transition-colors hover:text-ink"
             >
-              See the architecture
+              Architecture
               <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-0.5" />
             </a>
           </motion.div>
@@ -114,15 +122,31 @@ export function Hero() {
           </motion.div>
         </div>
 
+        {/* Real product screenshot */}
         <motion.div
           initial={{ opacity: 0, y: 24, scale: 0.98 }}
           animate={{ opacity: 1, y: 0, scale: 1 }}
           transition={{ duration: 0.8, ease, delay: 0.2 }}
-          className="flex justify-center lg:justify-end"
+          className="relative"
         >
-          <div className="animate-floaty">
-            <ConsoleCard />
-          </div>
+          <div className="absolute -inset-4 rounded-3xl bg-[radial-gradient(ellipse_at_center,rgba(76,130,251,0.18),transparent_70%)] blur-xl" />
+          <figure className="glass relative overflow-hidden rounded-2xl border border-line p-2 shadow-2xl">
+            <div className="flex items-center gap-1.5 px-2 py-2">
+              <span className="h-2.5 w-2.5 rounded-full bg-red/70" />
+              <span className="h-2.5 w-2.5 rounded-full bg-amber/70" />
+              <span className="h-2.5 w-2.5 rounded-full bg-green/70" />
+              <span className="mono ml-2 text-[10px] text-faint">localhost:8080</span>
+            </div>
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img
+              src="/screenshots/dashboard-overview.png"
+              alt="Cyber Command Center SOC dashboard — security score, live threat posture, activity trends, severity mix and fused CVE alerts."
+              width={939}
+              height={951}
+              loading="eager"
+              className="h-auto w-full rounded-xl border border-line"
+            />
+          </figure>
         </motion.div>
       </div>
     </section>
