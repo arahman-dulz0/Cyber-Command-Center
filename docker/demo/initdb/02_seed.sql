@@ -163,15 +163,17 @@ INSERT INTO kb_chunks (document_id, chunk_index, content, embedding) VALUES
 (4,1,'Prioritise alerts touching internet-facing assets on the CISA KEV list within the last 24 hours.','{0.10,0.11,0.12,0.13}');
 
 -- --- News feed ---------------------------------------------------------------
+-- Links point at canonical, always-live references (NVD CVE pages + the CISA KEV
+-- catalog) so demo headlines never 404. `source` is the outlet that covered it.
 INSERT INTO news_articles (title, url, source, description, published_date, created_at) VALUES
-('CISA adds actively exploited edge-device flaws to KEV catalog','https://www.cisa.gov/news-events/alerts/demo-kev-update','CISA','New known-exploited vulnerabilities added, urging federal agencies to patch within the due date.',NOW()-INTERVAL '4 hours',NOW()-INTERVAL '4 hours'),
-('Ransomware affiliates exploit Citrix Bleed to breach enterprises','https://www.bleepingcomputer.com/news/security/demo-citrix-bleed','BleepingComputer','Multiple ransomware groups leverage CVE-2023-4966 for initial access and session hijacking.',NOW()-INTERVAL '10 hours',NOW()-INTERVAL '10 hours'),
-('New OpenSSH regreSSHion flaw enables unauthenticated root RCE','https://thehackernews.com/2024/07/demo-regresshion','The Hacker News','CVE-2024-6387 affects glibc Linux systems; exploitation is difficult but demonstrated.',NOW()-INTERVAL '16 hours',NOW()-INTERVAL '16 hours'),
-('Mass exploitation of ConnectWise ScreenConnect underway','https://www.bleepingcomputer.com/news/security/demo-screenconnect','BleepingComputer','Attackers exploit CVE-2024-1709 to deploy ransomware and infostealers on unpatched servers.',NOW()-INTERVAL '21 hours',NOW()-INTERVAL '21 hours'),
-('XZ Utils backdoor: how a supply-chain attack nearly hit millions','https://arstechnica.com/security/demo-xz-backdoor','Ars Technica','Analysis of the malicious liblzma code that would have backdoored sshd across major distros.',NOW()-INTERVAL '30 hours',NOW()-INTERVAL '30 hours'),
-('Palo Alto patches PAN-OS zero-day exploited in the wild','https://thehackernews.com/2024/04/demo-panos','The Hacker News','CVE-2024-3400 allows unauthenticated root command execution on GlobalProtect gateways.',NOW()-INTERVAL '44 hours',NOW()-INTERVAL '44 hours'),
-('HTTP/2 Rapid Reset drives record-breaking DDoS attacks','https://blog.cloudflare.com/demo-http2-rapid-reset','Cloudflare','CVE-2023-44487 abused for the largest DDoS attacks observed to date.',NOW()-INTERVAL '60 hours',NOW()-INTERVAL '60 hours'),
-('JetBrains TeamCity auth bypass threatens CI/CD supply chains','https://thehackernews.com/2024/03/demo-teamcity','The Hacker News','CVE-2024-27198 lets unauthenticated attackers seize control of build pipelines.',NOW()-INTERVAL '76 hours',NOW()-INTERVAL '76 hours');
+('CISA adds actively exploited edge-device flaws to KEV catalog','https://www.cisa.gov/known-exploited-vulnerabilities-catalog','CISA','New known-exploited vulnerabilities added, urging federal agencies to patch within the due date.',NOW()-INTERVAL '4 hours',NOW()-INTERVAL '4 hours'),
+('Ransomware affiliates exploit Citrix Bleed to breach enterprises','https://nvd.nist.gov/vuln/detail/CVE-2023-4966','BleepingComputer','Multiple ransomware groups leverage CVE-2023-4966 for initial access and session hijacking.',NOW()-INTERVAL '10 hours',NOW()-INTERVAL '10 hours'),
+('New OpenSSH regreSSHion flaw enables unauthenticated root RCE','https://nvd.nist.gov/vuln/detail/CVE-2024-6387','The Hacker News','CVE-2024-6387 affects glibc Linux systems; exploitation is difficult but demonstrated.',NOW()-INTERVAL '16 hours',NOW()-INTERVAL '16 hours'),
+('Mass exploitation of ConnectWise ScreenConnect underway','https://nvd.nist.gov/vuln/detail/CVE-2024-1709','BleepingComputer','Attackers exploit CVE-2024-1709 to deploy ransomware and infostealers on unpatched servers.',NOW()-INTERVAL '21 hours',NOW()-INTERVAL '21 hours'),
+('XZ Utils backdoor: how a supply-chain attack nearly hit millions','https://nvd.nist.gov/vuln/detail/CVE-2024-3094','Ars Technica','Analysis of the malicious liblzma code that would have backdoored sshd across major distros.',NOW()-INTERVAL '30 hours',NOW()-INTERVAL '30 hours'),
+('Palo Alto patches PAN-OS zero-day exploited in the wild','https://nvd.nist.gov/vuln/detail/CVE-2024-3400','The Hacker News','CVE-2024-3400 allows unauthenticated root command execution on GlobalProtect gateways.',NOW()-INTERVAL '44 hours',NOW()-INTERVAL '44 hours'),
+('HTTP/2 Rapid Reset drives record-breaking DDoS attacks','https://nvd.nist.gov/vuln/detail/CVE-2023-44487','Cloudflare','CVE-2023-44487 abused for the largest DDoS attacks observed to date.',NOW()-INTERVAL '60 hours',NOW()-INTERVAL '60 hours'),
+('JetBrains TeamCity auth bypass threatens CI/CD supply chains','https://nvd.nist.gov/vuln/detail/CVE-2024-27198','The Hacker News','CVE-2024-27198 lets unauthenticated attackers seize control of build pipelines.',NOW()-INTERVAL '76 hours',NOW()-INTERVAL '76 hours');
 
 -- --- Activity (monitors, commands, AI, analyst) ------------------------------
 INSERT INTO monitor_runs (task, started, finished, status, items_found, items_posted, last_success) VALUES
