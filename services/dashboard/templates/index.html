@@ -116,7 +116,7 @@
         <h2 class="text-sm font-semibold text-[var(--ink)] mb-3">🎓 Learning</h2>
         <div id="learning" class="text-sm"></div>
         <h2 class="text-sm font-semibold text-[var(--ink)] mt-4 mb-2">📰 Latest news</h2>
-        <div id="news" class="space-y-1 text-xs"></div>
+        <div id="news" class="space-y-2.5 text-xs"></div>
       </div>
     </section>
 
@@ -260,11 +260,15 @@ async function refresh(){
       <div class="text-[var(--muted)] text-xs mt-1">${esc((r.summary||'').slice(0,300))}${(r.summary||'').length>300?'…':''}</div>
     </div>`).join('') : '<div class="text-[var(--faint)] text-xs">No reports yet — run <span class="text-[var(--muted)]">/report</span> in Discord.</div>';
 
-  // News
+  // News — two-line clamp per headline (readable), source on its own line
   const nw = await j('/api/latest-news');
   document.getElementById('news').innerHTML = nw.length ? nw.slice(0,6).map(n=>
-    `<div class="truncate"><a href="${safeUrl(n.url)}" target="_blank" rel="noopener noreferrer" class="text-[var(--muted)] lnk">${esc(n.title)}</a>
-      <span class="text-[var(--faint)]">· ${esc(n.source||'')}</span></div>`).join('') : '<div class="text-[var(--faint)]">No news yet.</div>';
+    `<a href="${safeUrl(n.url)}" target="_blank" rel="noopener noreferrer"
+        class="block border-b border-[#141c2c] pb-2 group">
+      <div class="text-[var(--muted)] group-hover:text-white leading-snug"
+           style="display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden">${esc(n.title)}</div>
+      <div class="text-[var(--faint)] text-[10px] mt-1 uppercase tracking-wide">${esc(n.source||'')}</div>
+    </a>`).join('') : '<div class="text-[var(--faint)]">No news yet.</div>';
 }
 
 refresh();
