@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { ArrowRight, BookText } from "lucide-react";
 import { Section } from "./section";
 import { Reveal } from "./reveal";
@@ -5,6 +6,12 @@ import { GithubIcon } from "./github-icon";
 import { SITE, DOC_LINKS } from "@/lib/data";
 
 const REPO = SITE.repo;
+
+// Homepage doc cards link into the real /docs pages.
+function docHref(path: string): string {
+  if (path.endsWith("README.md")) return "/docs";
+  return `/docs/${path.replace(/\.md$/, "")}`;
+}
 
 export function Docs() {
   return (
@@ -18,10 +25,8 @@ export function Docs() {
         <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3">
           {DOC_LINKS.map(({ title, body, path }, i) => (
             <Reveal key={title} delay={(i % 3) * 0.05}>
-              <a
-                href={`${SITE.docsBase}/${path}`}
-                target="_blank"
-                rel="noreferrer"
+              <Link
+                href={docHref(path)}
                 className="group flex h-full items-start gap-4 rounded-xl border border-line bg-panel/30 p-5 transition-colors hover:border-blue/40 hover:bg-panel"
               >
                 <BookText className="mt-0.5 h-5 w-5 shrink-0 text-cyan" strokeWidth={1.6} />
@@ -34,7 +39,7 @@ export function Docs() {
                   </div>
                   <p className="mt-1 text-sm leading-relaxed text-muted">{body}</p>
                 </div>
-              </a>
+              </Link>
             </Reveal>
           ))}
         </div>
@@ -65,12 +70,12 @@ export function Docs() {
                   <GithubIcon className="h-4 w-4" />
                   Get it on GitHub
                 </a>
-                <a
-                  href="#docs"
+                <Link
+                  href="/docs"
                   className="rounded-xl border border-line bg-panel/60 px-5 py-3 text-sm font-medium transition-colors hover:border-blue/40 hover:bg-panel"
                 >
                   Read the docs
-                </a>
+                </Link>
               </div>
             </div>
           </div>

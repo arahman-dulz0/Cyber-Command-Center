@@ -12,7 +12,8 @@ const LINKS = [
   { href: "#architecture", label: "Architecture" },
   { href: "#roadmap", label: "Roadmap" },
   { href: "#install", label: "Install" },
-  { href: "#docs", label: "Docs" },
+  { href: "/docs", label: "Docs" },
+  { href: "/blog", label: "Blog" },
 ];
 
 const REPO = SITE.repo;

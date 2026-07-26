@@ -132,6 +132,127 @@ body {
   animation: floaty 6s ease-in-out infinite;
 }
 
+.mono {
+  font-family: var(--font-mono);
+}
+
+/* ------------------------------------------------ rendered markdown (prose) */
+.prose {
+  max-width: 46rem;
+  color: var(--color-muted);
+  font-size: 0.975rem;
+  line-height: 1.75;
+}
+.prose h1,
+.prose h2,
+.prose h3,
+.prose h4 {
+  color: var(--color-ink);
+  font-family: var(--font-display);
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  line-height: 1.25;
+  scroll-margin-top: 6rem;
+}
+.prose h1 {
+  font-size: 2rem;
+  margin: 0 0 1rem;
+}
+.prose h2 {
+  font-size: 1.4rem;
+  margin: 2.4rem 0 0.9rem;
+  padding-top: 1.6rem;
+  border-top: 1px solid var(--color-line);
+}
+.prose h3 {
+  font-size: 1.1rem;
+  margin: 1.8rem 0 0.6rem;
+}
+.prose p {
+  margin: 0 0 1.05rem;
+}
+.prose a {
+  color: var(--color-cyan);
+  text-decoration: none;
+}
+.prose a:hover {
+  text-decoration: underline;
+}
+.prose strong {
+  color: var(--color-ink);
+  font-weight: 600;
+}
+.prose ul,
+.prose ol {
+  margin: 0 0 1.05rem;
+  padding-left: 1.4rem;
+}
+.prose ul {
+  list-style: disc;
+}
+.prose ol {
+  list-style: decimal;
+}
+.prose li {
+  margin: 0.3rem 0;
+}
+.prose code {
+  font-family: var(--font-mono);
+  font-size: 0.85em;
+  background: var(--color-panel2);
+  border: 1px solid var(--color-line);
+  border-radius: 5px;
+  padding: 0.12em 0.4em;
+  color: var(--color-cyan);
+}
+.prose pre {
+  background: var(--color-bg2);
+  border: 1px solid var(--color-line);
+  border-radius: 12px;
+  padding: 1rem 1.15rem;
+  overflow-x: auto;
+  margin: 0 0 1.2rem;
+  font-size: 0.85rem;
+  line-height: 1.6;
+}
+.prose pre code {
+  background: none;
+  border: none;
+  padding: 0;
+  color: var(--color-ink);
+  font-size: inherit;
+}
+.prose blockquote {
+  border-left: 3px solid var(--color-blue);
+  margin: 0 0 1.1rem;
+  padding: 0.2rem 0 0.2rem 1rem;
+  color: var(--color-muted);
+}
+.prose table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 0 0 1.3rem;
+  font-size: 0.9rem;
+  display: block;
+  overflow-x: auto;
+}
+.prose th,
+.prose td {
+  border: 1px solid var(--color-line);
+  padding: 0.5rem 0.75rem;
+  text-align: left;
+}
+.prose th {
+  background: var(--color-panel2);
+  color: var(--color-ink);
+  font-weight: 600;
+}
+.prose hr {
+  border: none;
+  border-top: 1px solid var(--color-line);
+  margin: 2rem 0;
+}
+
 @media (prefers-reduced-motion: reduce) {
   *,
   *::before,
