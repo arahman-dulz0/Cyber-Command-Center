@@ -5,6 +5,7 @@ import { Why } from "@/components/why";
 import { Modules } from "@/components/modules";
 import { Architecture } from "@/components/architecture";
 import { Roadmap } from "@/components/roadmap";
+import { Install } from "@/components/install";
 import { Demo } from "@/components/demo";
 import { TechStack } from "@/components/tech-stack";
 import { OpenSource } from "@/components/open-source";
@@ -38,6 +39,7 @@ export default function Home() {
         <Modules />
         <Architecture />
         <Roadmap />
+        <Install />
         <Demo />
         <TechStack />
         <OpenSource />

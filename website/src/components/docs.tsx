@@ -2,23 +2,9 @@ import { ArrowRight, BookText } from "lucide-react";
 import { Section } from "./section";
 import { Reveal } from "./reveal";
 import { GithubIcon } from "./github-icon";
+import { SITE, DOC_LINKS } from "@/lib/data";
 
-const REPO = "https://github.com/cyber-command-center/oss";
-
-const DOCS = [
-  ["Getting Started", "Run the platform end to end in minutes."],
-  ["Installation", "Proxmox, Docker Compose and prerequisites."],
-  ["Architecture", "How collection, fusion, AI and delivery fit together."],
-  ["Deployment", "Ship the bot and dashboard to your server."],
-  ["Configuration", "Every setting, via a single .env file."],
-  ["Threat Intelligence", "CVE monitoring and multi-source fusion."],
-  ["Learning Intelligence", "HackTheBox import and recommendations."],
-  ["Knowledge Base", "Ingest documents and query with RAG."],
-  ["Automation", "Asset matching, tickets and escalation."],
-  ["API Reference", "Programmatic access to the dashboard data."],
-  ["Discord Commands", "All 20+ slash commands, explained."],
-  ["Contributing", "Set up a dev environment and open a PR."],
-];
+const REPO = SITE.repo;
 
 export function Docs() {
   return (
@@ -30,10 +16,10 @@ export function Docs() {
         intro="A complete manual — from first boot to contributing back. Written for operators, not just developers."
       >
         <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3">
-          {DOCS.map(([title, body], i) => (
+          {DOC_LINKS.map(({ title, body, path }, i) => (
             <Reveal key={title} delay={(i % 3) * 0.05}>
               <a
-                href={REPO}
+                href={`${SITE.docsBase}/${path}`}
                 target="_blank"
                 rel="noreferrer"
                 className="group flex h-full items-start gap-4 rounded-xl border border-line bg-panel/30 p-5 transition-colors hover:border-blue/40 hover:bg-panel"

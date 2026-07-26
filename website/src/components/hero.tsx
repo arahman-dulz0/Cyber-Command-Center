@@ -2,12 +2,12 @@
 
 import { motion } from "motion/react";
 import { ArrowRight, Play } from "lucide-react";
-import { SOURCES } from "@/lib/data";
+import { SOURCES, SITE } from "@/lib/data";
 import { NetworkCanvas } from "./network-canvas";
 import { ConsoleCard } from "./console-card";
 import { GithubIcon } from "./github-icon";
 
-const REPO = "https://github.com/cyber-command-center/oss";
+const REPO = SITE.repo;
 
 const ease = [0.22, 1, 0.36, 1] as const;
 

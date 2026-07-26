@@ -1,7 +1,8 @@
 import { Logo } from "./logo";
 import { GithubIcon } from "./github-icon";
+import { SITE } from "@/lib/data";
 
-const REPO = "https://github.com/cyber-command-center/oss";
+const REPO = SITE.repo;
 
 const COLUMNS = [
   {

@@ -14,6 +14,7 @@ import {
   MessageSquare,
   Boxes,
   BarChart3,
+  Sparkles,
   type LucideIcon,
 } from "lucide-react";
 
@@ -33,4 +34,5 @@ export const ICONS: Record<string, LucideIcon> = {
   MessageSquare,
   Boxes,
   BarChart3,
+  Sparkles,
 };

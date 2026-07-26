@@ -2,10 +2,11 @@
 
 import { useState } from "react";
 import { AnimatePresence, motion } from "motion/react";
-import { Check, Plus } from "lucide-react";
-import { PHASES } from "@/lib/data";
+import { Check, Plus, ArrowUpRight } from "lucide-react";
+import { PHASES, NEXT } from "@/lib/data";
 import { cn } from "@/lib/utils";
 import { Section } from "./section";
+import { Reveal } from "./reveal";
 
 export function Roadmap() {
   const [open, setOpen] = useState(0);
@@ -14,8 +15,8 @@ export function Roadmap() {
     <Section
       id="roadmap"
       eyebrow="Roadmap"
-      title="Eight phases, all shipped."
-      intro="The platform was built in sequence — each phase a working milestone that the next one builds on. Every stage below is complete and running."
+      title="Nine milestones, all shipped."
+      intro="The platform was built in sequence — each milestone a working stage that the next one builds on. Every stage below is complete and running."
     >
       <div className="relative">
         <div className="absolute bottom-6 left-[27px] top-6 w-px bg-line md:left-[31px]" aria-hidden />
@@ -76,6 +77,29 @@ export function Roadmap() {
           })}
         </div>
       </div>
+
+      {/* What's next */}
+      <Reveal className="mt-14">
+        <div className="mb-5 flex items-center gap-2">
+          <ArrowUpRight className="h-4 w-4 text-cyan" strokeWidth={1.8} />
+          <h3 className="font-display text-lg font-semibold tracking-tight text-ink">
+            What&apos;s next
+          </h3>
+        </div>
+        <div className="grid grid-cols-1 gap-3 sm:grid-cols-3">
+          {NEXT.map((n) => (
+            <div
+              key={n.title}
+              className="rounded-xl border border-dashed border-line bg-panel/20 p-5"
+            >
+              <div className="font-display text-base font-semibold text-ink">
+                {n.title}
+              </div>
+              <p className="mt-1.5 text-sm leading-relaxed text-muted">{n.body}</p>
+            </div>
+          ))}
+        </div>
+      </Reveal>
     </Section>
   );
 }

@@ -5,16 +5,17 @@ import { Menu, X } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Logo } from "./logo";
 import { GithubIcon } from "./github-icon";
+import { SITE } from "@/lib/data";
 
 const LINKS = [
   { href: "#platform", label: "Platform" },
   { href: "#architecture", label: "Architecture" },
   { href: "#roadmap", label: "Roadmap" },
-  { href: "#stack", label: "Stack" },
+  { href: "#install", label: "Install" },
   { href: "#docs", label: "Docs" },
 ];
 
-const REPO = "https://github.com/cyber-command-center/oss";
+const REPO = SITE.repo;
 
 export function Nav() {
   const [scrolled, setScrolled] = useState(false);

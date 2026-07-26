@@ -10,6 +10,13 @@ export type Module = {
 
 export const MODULES: Module[] = [
   {
+    name: "AI Security Analyst",
+    icon: "Sparkles",
+    tag: "decide",
+    blurb:
+      "One natural-language command answers from your own data first — assets, CVEs, KEV, tickets, knowledge base — and uses the local LLM only as the last step.",
+  },
+  {
     name: "Threat Intelligence",
     icon: "Radar",
     tag: "collect",
@@ -137,6 +144,7 @@ export const PHASES: Phase[] = [
   { n: 6, title: "SOC Dashboard", body: "A self-hosted operations dashboard reading live from the same database." },
   { n: 7, title: "Multi-Agent Crew", body: "Specialised agents that hand off to synthesize intelligence reports." },
   { n: 8, title: "Automation & Actioning", body: "Lab-aware matching that raises tickets and escalates the CVEs that affect you." },
+  { n: 9, title: "AI Security Analyst", body: "A single natural-language interface over the whole platform: classify intent, plan multi-step tool calls, search your own data first, and answer with rich embeds — the LLM is the last resort, never the first." },
 ];
 
 export type TechGroup = { group: string; items: string[] };
@@ -151,7 +159,7 @@ export const TECH: TechGroup[] = [
 
 export type Stat = { value: string; label: string };
 export const STATS: Stat[] = [
-  { value: "20+", label: "Discord commands" },
+  { value: "22", label: "Discord commands" },
   { value: "8", label: "Development phases" },
   { value: "5", label: "AI agents" },
   { value: "4", label: "Background monitors" },
@@ -174,4 +182,67 @@ export const ARCH: ArchNode[] = [
   { id: "rag", label: "Knowledge Base", kind: "store", desc: "Vector search over your own notes and write-ups, grounding assistant answers in your material." },
   { id: "automation", label: "Automation Engine", kind: "core", desc: "Matches priority CVEs against your asset inventory and takes action without waiting for you." },
   { id: "outputs", label: "Discord · Dashboard · API", kind: "output", desc: "Delivered where you work: chat commands, a live SOC dashboard, and programmatic access." },
+];
+
+// --- Single source of truth for outbound links ------------------------------
+export const SITE = {
+  repo: "https://github.com/cyber-command-center/oss",
+  docsBase: "https://github.com/cyber-command-center/oss/blob/main/docs",
+};
+
+// --- Install (the one-command story) ----------------------------------------
+export type InstallMode = {
+  key: string;
+  label: string;
+  blurb: string;
+  commands: string[];
+  note?: string;
+};
+export const INSTALL: InstallMode[] = [
+  {
+    key: "demo",
+    label: "Try the dashboard",
+    blurb: "Postgres pre-loaded with a real-CVE demo dataset + the SOC dashboard. No config, no keys, no model download.",
+    commands: [
+      "git clone https://github.com/cyber-command-center/oss.git",
+      "cd oss",
+      "docker compose up -d",
+    ],
+    note: "Open http://localhost:8080 — a fully populated dashboard in ~30s.",
+  },
+  {
+    key: "full",
+    label: "Full platform",
+    blurb: "Adds the Discord bot, Redis and a local Ollama for the complete autonomous experience.",
+    commands: [
+      "cp .env.example .env        # set DISCORD_TOKEN",
+      "docker compose --profile full up -d",
+      "docker compose exec ollama ollama pull qwen2.5:3b",
+    ],
+    note: "The AI runs locally — nothing leaves your machine.",
+  },
+];
+
+// --- Documentation index (deep-links to the real docs) ----------------------
+export type DocLink = { title: string; body: string; path: string };
+export const DOC_LINKS: DocLink[] = [
+  { title: "Getting Started", body: "Run the platform end to end in minutes.", path: "../README.md" },
+  { title: "Developer Guide", body: "Repo layout, the repository pattern, local dev.", path: "developer-guide.md" },
+  { title: "API & Commands", body: "All 22 slash commands + the dashboard HTTP API.", path: "api.md" },
+  { title: "Architecture", body: "How collection, fusion, AI and delivery fit together.", path: "phase6.md" },
+  { title: "Deployment", body: "Ship the bot and dashboard to your server.", path: "operations.md" },
+  { title: "Security", body: "Auth, rate limiting, headers, going public.", path: "security.md" },
+  { title: "Threat Intelligence", body: "CVE monitoring and multi-source fusion.", path: "phase3.md" },
+  { title: "Learning Intelligence", body: "HackTheBox import and recommendations.", path: "phase4.md" },
+  { title: "Knowledge Base", body: "Ingest documents and query with RAG.", path: "phase5.md" },
+  { title: "Automation", body: "Asset matching, tickets and escalation.", path: "phase8.md" },
+  { title: "Plugins", body: "Add a monitor, enrichment source, or analyst tool.", path: "plugins.md" },
+  { title: "Troubleshooting & FAQ", body: "Symptom → cause → fix, and common questions.", path: "troubleshooting.md" },
+];
+
+// --- What's next (roadmap forward-look) -------------------------------------
+export const NEXT: { title: string; body: string }[] = [
+  { title: "Public demo", body: "A hosted, read-only dashboard so anyone can explore without installing." },
+  { title: "Plugin marketplace", body: "Drop-in monitors and enrichment sources contributed by the community." },
+  { title: "More integrations", body: "Slack and Microsoft Teams delivery alongside Discord." },
 ];
