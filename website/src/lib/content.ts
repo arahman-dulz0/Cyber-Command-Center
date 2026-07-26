@@ -11,6 +11,7 @@ const DOCS_DIR = path.join(process.cwd(), "..", "docs");
 
 // Curated order + friendly titles for the docs index.
 export const DOC_ORDER: { slug: string; title: string; group: string }[] = [
+  { slug: "getting-started", title: "Getting Started", group: "Guides" },
   { slug: "developer-guide", title: "Developer Guide", group: "Guides" },
   { slug: "api", title: "API & Commands", group: "Guides" },
   { slug: "plugins", title: "Plugins", group: "Guides" },

@@ -54,14 +54,17 @@ cyber-command-center/
 
 ## Quick start
 
+> 🚀 **New here? Follow the [Getting Started guide](docs/getting-started.md)** — a
+> step-by-step walkthrough from clone to a fully running platform.
+
 ### Try the dashboard in one command (no config)
 
 Spins up Postgres pre-loaded with a **real-CVE demo dataset** and the SOC
 dashboard — no `.env`, no API keys, no model download:
 
 ```bash
-git clone https://github.com/cyber-command-center/oss.git
-cd oss
+git clone https://github.com/arahman-dulz0/Cyber-Command-Center.git
+cd Cyber-Command-Center
 docker compose up -d
 # open http://localhost:8080  → a fully-populated dashboard
 ```
@@ -71,10 +74,12 @@ Spring4Shell, MOVEit, Citrix Bleed, …) — see `docker/demo/initdb/`.
 
 ### Run the full platform (Discord bot + AI)
 
-Adds the Discord bot, Redis and a local Ollama:
+Adds the Discord bot, Redis and a local Ollama. See the
+**[Getting Started guide](docs/getting-started.md)** for the full walkthrough
+(creating the Discord bot, intents, inviting it). The short version:
 
 ```bash
-cp .env.example .env                 # set DISCORD_TOKEN (+ DISCORD_GUILD_ID)
+cp .env.example .env                 # set DISCORD_TOKEN + DISCORD_GUILD_ID
 docker compose --profile full up -d
 docker compose exec ollama ollama pull qwen2.5:3b
 docker compose exec ollama ollama pull nomic-embed-text
@@ -143,6 +148,7 @@ engine. See **[docs/phase3.md](docs/phase3.md)**.
 
 | Guide | What's inside |
 |---|---|
+| **[getting-started.md](docs/getting-started.md)** | Clone → Discord bot → full platform, step by step. |
 | **[api.md](docs/api.md)** | All 22 slash commands + the dashboard HTTP API. |
 | **[developer-guide.md](docs/developer-guide.md)** | Repo layout, the repository pattern, local dev, deploying. |
 | **[plugins.md](docs/plugins.md)** | Add a monitor, an enrichment source, or an analyst tool. |

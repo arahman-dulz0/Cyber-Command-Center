@@ -53,8 +53,8 @@ The whole thing comes up with one command, pre-loaded with a real-CVE demo
 dataset so the dashboard is alive on first boot:
 
 \`\`\`bash
-git clone <repo> && cd Cyber-Command-Center
-docker compose up -d      # → http://localhost:8080
+git clone https://github.com/arahman-dulz0/Cyber-Command-Center.git
+cd Cyber-Command-Center && docker compose up -d   # → http://localhost:8080
 \`\`\`
 
 No API keys, no model download, no configuration. That was the whole point.

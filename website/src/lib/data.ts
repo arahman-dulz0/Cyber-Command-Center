@@ -186,8 +186,8 @@ export const ARCH: ArchNode[] = [
 
 // --- Single source of truth for outbound links ------------------------------
 export const SITE = {
-  repo: "https://github.com/cyber-command-center/oss",
-  docsBase: "https://github.com/cyber-command-center/oss/blob/main/docs",
+  repo: "https://github.com/arahman-dulz0/Cyber-Command-Center",
+  docsBase: "https://github.com/arahman-dulz0/Cyber-Command-Center/blob/main/docs",
 };
 
 // --- Install (the one-command story) ----------------------------------------
@@ -204,8 +204,8 @@ export const INSTALL: InstallMode[] = [
     label: "Try the dashboard",
     blurb: "Postgres pre-loaded with a real-CVE demo dataset + the SOC dashboard. No config, no keys, no model download.",
     commands: [
-      "git clone https://github.com/cyber-command-center/oss.git",
-      "cd oss",
+      "git clone https://github.com/arahman-dulz0/Cyber-Command-Center.git",
+      "cd Cyber-Command-Center",
       "docker compose up -d",
     ],
     note: "Open http://localhost:8080 — a fully populated dashboard in ~30s.",
@@ -226,7 +226,7 @@ export const INSTALL: InstallMode[] = [
 // --- Documentation index (deep-links to the real docs) ----------------------
 export type DocLink = { title: string; body: string; path: string };
 export const DOC_LINKS: DocLink[] = [
-  { title: "Getting Started", body: "Run the platform end to end in minutes.", path: "../README.md" },
+  { title: "Getting Started", body: "Clone → Discord bot → run the full platform, step by step.", path: "getting-started.md" },
   { title: "Developer Guide", body: "Repo layout, the repository pattern, local dev.", path: "developer-guide.md" },
   { title: "API & Commands", body: "All 22 slash commands + the dashboard HTTP API.", path: "api.md" },
   { title: "Architecture", body: "How collection, fusion, AI and delivery fit together.", path: "phase6.md" },
