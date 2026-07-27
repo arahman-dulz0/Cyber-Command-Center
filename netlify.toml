@@ -1,7 +1,8 @@
 # Netlify build config — the Next.js site lives in the website/ subfolder.
-# Netlify auto-detects Next.js and applies @netlify/plugin-nextjs; we only need
-# to point it at the base directory and use the project's build script (which
-# runs the prebuild docs-sync step).
+# We explicitly declare @netlify/plugin-nextjs so it runs even though the repo
+# root is a Python project (auto-detection can miss the Next app in a subdir).
+# The plugin sets the correct publish directory and serverless functions — do
+# NOT set `publish` manually for Next.js.
 
 [build]
   base = "website"
@@ -9,3 +10,6 @@
 
 [build.environment]
   NODE_VERSION = "20"
+
+[[plugins]]
+  package = "@netlify/plugin-nextjs"
