@@ -1,5 +1,12 @@
 # 🛡️ Cyber Command Center
 
+### 🔗 [**Live Site → cyber-command-center.netlify.app**](https://cyber-command-center.netlify.app)
+
+[![Live Site](https://img.shields.io/badge/live-cyber--command--center.netlify.app-4c82fb?style=flat-square&logo=netlify&logoColor=white)](https://cyber-command-center.netlify.app)
+[![License: MIT](https://img.shields.io/badge/License-MIT-34c759?style=flat-square)](LICENSE)
+[![Self-hosted](https://img.shields.io/badge/self--hosted-Docker-9b6cff?style=flat-square&logo=docker&logoColor=white)](docs/getting-started.md)
+[![Local AI](https://img.shields.io/badge/AI-local%20(Ollama)-34e4ea?style=flat-square)](#)
+
 A self-hosted, fully automated **cybersecurity intelligence platform** that runs
 24/7 on a home server. It monitors the internet for threats, CVEs, news, and CTF
 events, then delivers everything to a personal Discord server as a smart,
