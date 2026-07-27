@@ -1,15 +1,12 @@
-# Netlify build config — the Next.js site lives in the website/ subfolder.
-# We explicitly declare @netlify/plugin-nextjs so it runs even though the repo
-# root is a Python project (auto-detection can miss the Next app in a subdir).
-# The plugin sets the correct publish directory and serverless functions — do
-# NOT set `publish` manually for Next.js.
+# Netlify build config — the Next.js site lives in the website/ subfolder and is
+# exported as a fully static site (output: "export" in next.config.ts), so there
+# is NO framework plugin — Netlify just publishes the generated `out/` folder.
+# Security headers are served via website/public/_headers.
 
 [build]
   base = "website"
   command = "npm run build"
+  publish = "out"
 
 [build.environment]
   NODE_VERSION = "20"
-
-[[plugins]]
-  package = "@netlify/plugin-nextjs"

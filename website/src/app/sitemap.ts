@@ -2,7 +2,12 @@ import type { MetadataRoute } from "next";
 import { docSlugs } from "@/lib/content";
 import { postSlugs } from "@/lib/blog";
 
-const BASE = "https://cybercommandcenter.dev";
+export const dynamic = "force-static";
+
+const BASE =
+  process.env.NEXT_PUBLIC_SITE_URL ??
+  process.env.URL ??
+  "https://cyber-command-center.netlify.app";
 
 export default function sitemap(): MetadataRoute.Sitemap {
   const now = new Date();

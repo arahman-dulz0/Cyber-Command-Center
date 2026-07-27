@@ -20,7 +20,10 @@ const jbmono = JetBrains_Mono({
 // Resolve the canonical origin: explicit env → Vercel deploy URL → production domain.
 const SITE =
   process.env.NEXT_PUBLIC_SITE_URL ??
-  (process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : "https://cybercommandcenter.dev");
+  process.env.URL ?? // Netlify sets URL to the primary site address at build time
+  (process.env.VERCEL_URL
+    ? `https://${process.env.VERCEL_URL}`
+    : "https://cyber-command-center.netlify.app");
 const TITLE = "Cyber Command Center OSS — AI Cybersecurity Operations Platform";
 const DESC =
   "Open-source, self-hosted AI security operations platform. Correlates CVEs with EPSS, CISA KEV, ExploitDB and GitHub PoCs, runs autonomous intelligence collection, RAG over your own notes, a multi-agent report crew, and closed-loop remediation — all on local infrastructure with Ollama.";
